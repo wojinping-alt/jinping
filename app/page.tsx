@@ -17,7 +17,7 @@ export default function Home() {
       >
         进入课程
       </Link>   <p className="mt-4 text-green-600 text-xl">
-        部署测试成功
+        部署测试成功 自动部署测试 SUCCESS
       </p>
     </main>
   );
