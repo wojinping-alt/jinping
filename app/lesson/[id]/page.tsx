@@ -1,3 +1,5 @@
+import VideoPlayer from "@/components/VideoPlayer";
+import BuyButton from "@/components/BuyButton";
 import { supabase } from "@/lib/supabase";
 
 export default async function LessonPage({
@@ -31,10 +33,13 @@ export default async function LessonPage({
         ¥{course.price}
       </p>
 
-      <video
-        controls
-        className="mt-6 w-full rounded-2xl"
+      <div className="mt-6">
+  <BuyButton courseId={course.id} />
+</div>
+
+      <VideoPlayer
         src={course.video_url}
+        courseId={course.id}
       />
 
       {course.is_free_preview && (
