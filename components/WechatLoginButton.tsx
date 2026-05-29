@@ -2,11 +2,16 @@
 
 export default function WechatLoginButton() {
   const handleLogin = () => {
+    const appid = process.env.NEXT_PUBLIC_WECHAT_APP_ID;
+
+    if (!appid) {
+      alert("APPID 未加载，请检查 .env");
+      return;
+    }
+
     const redirectUri = encodeURIComponent(
       `${process.env.NEXT_PUBLIC_SITE_URL}/api/wechat/callback`
     );
-
-    const appid = process.env.NEXT_PUBLIC_WECHAT_APP_ID;
 
     const url =
       `https://open.weixin.qq.com/connect/oauth2/authorize` +
@@ -20,10 +25,7 @@ export default function WechatLoginButton() {
   };
 
   return (
-    <button
-      onClick={handleLogin}
-      className="bg-green-500 text-white px-4 py-2 rounded"
-    >
+    <button onClick={handleLogin}>
       微信登录
     </button>
   );
