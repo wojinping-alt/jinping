@@ -1,5 +1,5 @@
 import VideoPlayer from "@/components/VideoPlayer";
-import BuyButton from "@/components/BuyButton";
+import PayButton from "@/components/PayButton";
 import { supabase } from "@/lib/supabase";
 
 export default async function LessonPage({
@@ -33,9 +33,10 @@ export default async function LessonPage({
         ¥{course.price}
       </p>
 
+      {/* ✅ 这里是关键：替换 BuyButton */}
       <div className="mt-6">
-  <BuyButton courseId={course.id} />
-</div>
+        <PayButton price={course.price} />
+      </div>
 
       <VideoPlayer
         src={course.video_url}

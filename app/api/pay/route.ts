@@ -14,8 +14,8 @@ export async function POST(req: Request) {
 
     // 2️⃣ 微信支付配置
     const appid = "wxaabb8e5561161ecb"; // 你的公众号AppID
-    const mchid = "1646448012"; // 商户号
-    const serialNo = "51955935A40D1D112D6018B026FF04FEA8118120"; // 证书序列号
+    const mchid = "1746250881"; // 商户号
+    const serialNo = "3E10EC19F81B27606EBB1B314B07B6EEF5D5DFD3"; // 证书序列号
     const apiV3Key = "Zishu123456789101112131415161718"; // APIv3密钥
 
     // 3️⃣ 读取本地私钥
