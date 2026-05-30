@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
+import { toStableUuid } from "@/lib/stable-id";
 
 export async function getPayUser(req: Request) {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export async function getPayUser(req: Request) {
     return {
       supabase,
       user: {
-        id: wechatUserId,
+        id: toStableUuid(wechatUserId),
         email: undefined,
       },
     };

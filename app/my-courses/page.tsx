@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase-server";
+import { toStableUuid } from "@/lib/stable-id";
 
 type Course = {
   id: string | number;
@@ -18,7 +19,8 @@ export default async function MyCoursesPage() {
     data: { user },
   } = await supabase.auth.getUser();
   const cookieStore = await cookies();
-  const userId = user?.id || cookieStore.get("zishoo_user_id")?.value;
+  const rawUserId = user?.id || cookieStore.get("zishoo_user_id")?.value;
+  const userId = rawUserId ? toStableUuid(rawUserId) : undefined;
 
   if (!userId) {
     return <div className="p-10">请先登录</div>;
@@ -65,4 +67,3 @@ export default async function MyCoursesPage() {
     </div>
   );
 }
-

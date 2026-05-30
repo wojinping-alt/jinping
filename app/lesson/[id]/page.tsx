@@ -2,6 +2,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import PayButton from "@/components/PayButton";
 import { createClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
+import { toStableUuid } from "@/lib/stable-id";
 
 type LessonState =
   | { error: string; course?: never; userId?: never; hasPaid?: never }
@@ -50,7 +51,8 @@ async function loadLesson(id: string): Promise<LessonState> {
       data: { user },
     } = await supabase.auth.getUser();
     const cookieStore = await cookies();
-    const userId = user?.id || cookieStore.get("zishoo_user_id")?.value;
+    const rawUserId = user?.id || cookieStore.get("zishoo_user_id")?.value;
+    const userId = rawUserId ? toStableUuid(rawUserId) : undefined;
 
     let hasPaid = false;
 
