@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getPayUser } from "@/lib/pay-auth";
 import {
   buildNotifyUrl,
+  createJsapiPayParams,
   createWechatPayOrder,
   detectPayMode,
 } from "@/lib/wechat-pay";
+
+function getClientIp(req: Request) {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "127.0.0.1"
+  );
+}
 
 export async function POST(req: Request) {
   try {
@@ -53,28 +63,73 @@ export async function POST(req: Request) {
     const userAgent = req.headers.get("user-agent") || "";
     const mode = detectPayMode(userAgent);
 
+    const createOrder = async () =>
+      supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          course_id: course.id,
+          out_trade_no: outTradeNo,
+          amount,
+          status: "pending",
+        })
+        .select("id,out_trade_no")
+        .single();
+
     if (mode === "jsapi") {
-      return NextResponse.json(
-        {
-          mode,
-          error:
-            "微信内自动支付需要先绑定用户 openid。请在手机浏览器打开本页使用微信 H5 支付，或后续接入公众号 OAuth 后启用 JSAPI。",
-        },
-        { status: 400 }
-      );
+      const cookieStore = await cookies();
+      const openid = cookieStore.get("zishoo_wechat_openid")?.value;
+
+      if (!openid) {
+        const nextUrl = `/lesson/${courseId}`;
+
+        return NextResponse.json(
+          {
+            mode,
+            needsOpenid: true,
+            authUrl: `/api/wechat/login?scope=snsapi_base&next=${encodeURIComponent(nextUrl)}`,
+            error: "请先完成微信授权后继续支付",
+          },
+          { status: 428 }
+        );
+      }
+
+      const { data: order, error: orderError } = await createOrder();
+
+      if (orderError || !order) {
+        return NextResponse.json(
+          { error: orderError?.message || "创建订单失败" },
+          { status: 500 }
+        );
+      }
+
+      const payData = await createWechatPayOrder({
+        description: `购买课程 ${course.title}`.slice(0, 127),
+        outTradeNo,
+        amountFen: Math.round(amount * 100),
+        notifyUrl: buildNotifyUrl(req),
+        mode,
+        payerOpenid: openid,
+        clientIp: getClientIp(req),
+        userAgent,
+      });
+
+      if (!payData.prepay_id) {
+        return NextResponse.json(
+          { error: "微信支付没有返回 prepay_id" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({
+        orderId: order.id,
+        outTradeNo,
+        mode,
+        jsapiParams: createJsapiPayParams(payData.prepay_id),
+      });
     }
 
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        course_id: course.id,
-        out_trade_no: outTradeNo,
-        amount,
-        status: "pending",
-      })
-      .select("id,out_trade_no")
-      .single();
+    const { data: order, error: orderError } = await createOrder();
 
     if (orderError || !order) {
       return NextResponse.json(
@@ -89,10 +144,7 @@ export async function POST(req: Request) {
       amountFen: Math.round(amount * 100),
       notifyUrl: buildNotifyUrl(req),
       mode,
-      clientIp:
-        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        req.headers.get("x-real-ip") ||
-        "127.0.0.1",
+      clientIp: getClientIp(req),
       userAgent,
     });
 
@@ -110,9 +162,6 @@ export async function POST(req: Request) {
       ? "数据库 orders 表缺少 out_trade_no 字段，请先执行 supabase-payment-schema.sql。"
       : message;
 
-    return NextResponse.json(
-      { error: friendlyMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: friendlyMessage }, { status: 500 });
   }
 }

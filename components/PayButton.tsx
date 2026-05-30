@@ -11,8 +11,23 @@ type PayResponse = {
   mode?: "native" | "h5" | "jsapi";
   codeUrl?: string;
   h5Url?: string;
+  needsOpenid?: boolean;
+  authUrl?: string;
+  jsapiParams?: Record<string, string>;
   error?: string;
 };
+
+declare global {
+  interface Window {
+    WeixinJSBridge?: {
+      invoke: (
+        name: string,
+        params: Record<string, string>,
+        callback: (result: { err_msg?: string }) => void
+      ) => void;
+    };
+  }
+}
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const {
@@ -40,6 +55,23 @@ async function hasSiteSession() {
   if (!res.ok) return false;
   const data = await res.json();
   return Boolean(data.loggedIn);
+}
+
+function invokeWechatPay(params: Record<string, string>) {
+  return new Promise<{ ok: boolean; message: string }>((resolve) => {
+    if (!window.WeixinJSBridge) {
+      resolve({ ok: false, message: "微信支付组件未加载，请在微信内重新打开页面" });
+      return;
+    }
+
+    window.WeixinJSBridge.invoke("getBrandWCPayRequest", params, (result) => {
+      const message = result.err_msg || "";
+      resolve({
+        ok: message === "get_brand_wcpay_request:ok",
+        message,
+      });
+    });
+  });
 }
 
 export default function PayButton({
@@ -118,6 +150,11 @@ export default function PayButton({
 
       const data = (await res.json()) as PayResponse;
 
+      if (data.needsOpenid && data.authUrl) {
+        window.location.href = data.authUrl;
+        return;
+      }
+
       if (res.status === 401) {
         window.localStorage.removeItem("zishoo_logged_in");
         window.localStorage.removeItem("zishoo_user_id");
@@ -146,6 +183,22 @@ export default function PayButton({
 
       setOrderId(data.orderId);
       startPolling(data.orderId);
+
+      if (data.mode === "jsapi" && data.jsapiParams) {
+        const result = await invokeWechatPay(data.jsapiParams);
+
+        if (result.ok) {
+          setMessage("支付完成，正在确认订单...");
+          return;
+        }
+
+        setMessage(
+          result.message.includes("cancel")
+            ? "你已取消支付"
+            : `微信支付未完成：${result.message || "未知错误"}`
+        );
+        return;
+      }
 
       if (data.mode === "h5" && data.h5Url) {
         const redirectUrl = encodeURIComponent(window.location.href);

@@ -180,6 +180,27 @@ export async function createWechatPayOrder(input: WechatOrderInput) {
   };
 }
 
+export function createJsapiPayParams(prepayId: string) {
+  const config = getWechatConfig();
+  const timeStamp = Math.floor(Date.now() / 1000).toString();
+  const nonceStr = crypto.randomBytes(16).toString("hex");
+  const packageValue = `prepay_id=${prepayId}`;
+  const message = `${config.appid}\n${timeStamp}\n${nonceStr}\n${packageValue}\n`;
+  const paySign = crypto
+    .createSign("RSA-SHA256")
+    .update(message)
+    .sign(config.privateKey, "base64");
+
+  return {
+    appId: config.appid,
+    timeStamp,
+    nonceStr,
+    package: packageValue,
+    signType: "RSA",
+    paySign,
+  };
+}
+
 export function decryptWechatResource(resource: {
   associated_data?: string;
   nonce: string;
