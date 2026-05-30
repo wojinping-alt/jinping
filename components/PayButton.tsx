@@ -24,6 +24,13 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
     : {};
 }
 
+async function hasSiteSession() {
+  const res = await fetch("/api/auth/me", { cache: "no-store" });
+  if (!res.ok) return false;
+  const data = await res.json();
+  return Boolean(data.loggedIn);
+}
+
 export default function PayButton({
   courseId,
   price,
@@ -73,10 +80,11 @@ export default function PayButton({
     const {
       data: { session },
     } = await supabase.auth.getSession();
+    const siteLoggedIn = await hasSiteSession();
 
-    if (!userId && !session?.user) {
+    if (!userId && !session?.user && !siteLoggedIn) {
       setMessage("请先登录后再购买课程");
-      router.push("/login");
+      router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -191,3 +199,4 @@ export default function PayButton({
     </div>
   );
 }
+

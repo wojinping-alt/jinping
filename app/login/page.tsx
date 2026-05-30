@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginContent() {
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [testMode, setTestMode] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "/courses";
 
   useEffect(() => {
     if (!expiresAt) return;
@@ -78,8 +80,8 @@ export default function LoginPage() {
         return;
       }
 
-      setMessage("登录成功，正在进入课程页...");
-      router.push("/courses");
+      setMessage("登录成功，正在返回...");
+      router.push(nextUrl);
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "登录失败");
@@ -165,3 +167,12 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
