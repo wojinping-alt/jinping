@@ -105,8 +105,13 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Create payment failed:", error);
+    const message = error instanceof Error ? error.message : "创建支付失败";
+    const friendlyMessage = message.includes("out_trade_no")
+      ? "数据库 orders 表缺少 out_trade_no 字段，请先执行 supabase-payment-schema.sql。"
+      : message;
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "创建支付失败" },
+      { error: friendlyMessage },
       { status: 500 }
     );
   }
