@@ -39,6 +39,7 @@ export function getWechatConfig(): WechatConfig {
   const mchid = process.env.WECHAT_PAY_MCH_ID;
   const serialNo = process.env.WECHAT_PAY_SERIAL_NO;
   const privateKey =
+    readPrivateKeyFromBase64() ||
     process.env.WECHAT_PAY_PRIVATE_KEY?.replace(/\\n/g, "\n") ||
     readPrivateKeyFromFile();
 
@@ -74,6 +75,13 @@ function readPrivateKeyFromFile() {
   }
 
   return fs.readFileSync(keyPath, "utf8");
+}
+
+function readPrivateKeyFromBase64() {
+  const encoded = process.env.WECHAT_PAY_PRIVATE_KEY_BASE64;
+  if (!encoded) return "";
+
+  return Buffer.from(encoded, "base64").toString("utf8");
 }
 
 function signRequest(
