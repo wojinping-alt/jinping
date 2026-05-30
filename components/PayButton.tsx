@@ -151,16 +151,16 @@ export default function PayButton({
       <button
         onClick={pay}
         disabled={loading}
-        className="rounded-lg bg-red-500 px-5 py-3 font-medium text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
+        className="rounded-md bg-red-500 px-5 py-3 font-medium text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
       >
-        {loading ? "创建订单中..." : `购买课程 ￥${price}`}
+        {loading ? "创建订单中..." : `购买课程 ¥${Number(price).toFixed(2)}`}
       </button>
 
       {message && <p className="mt-3 text-sm text-red-600">{message}</p>}
 
       {showQr && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-sm rounded-xl bg-white p-6 text-center shadow-xl">
+          <div className="w-full max-w-sm rounded-lg bg-white p-6 text-center shadow-xl">
             <h2 className="mb-2 text-xl font-bold text-gray-900">
               微信扫码支付
             </h2>
@@ -189,7 +189,7 @@ export default function PayButton({
 
             <button
               onClick={() => setShowQr(false)}
-              className="mt-5 rounded-lg border border-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="mt-5 rounded-md border border-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-50"
             >
               关闭
             </button>
@@ -199,4 +199,3 @@ export default function PayButton({
     </div>
   );
 }
-

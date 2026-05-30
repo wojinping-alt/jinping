@@ -34,10 +34,10 @@ export default function VideoPlayer({
     <video
       ref={videoRef}
       controls
+      playsInline
       onTimeUpdate={handleTimeUpdate}
-      className="mt-6 w-full rounded-2xl"
+      className="w-full rounded-lg bg-black"
       src={src}
     />
   );
 }
-
