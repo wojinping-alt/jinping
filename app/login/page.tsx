@@ -95,7 +95,7 @@ export default function LoginPage() {
           手机验证码登录
         </h1>
         <p className="mt-3 text-center text-sm text-gray-500">
-          输入手机号，接收腾讯云短信验证码后即可登录购买课程。
+          输入手机号和验证码后即可登录购买课程。
         </p>
         <p className="mt-2 text-center text-xs text-orange-600">
           当前可用测试验证码：123456

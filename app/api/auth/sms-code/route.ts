@@ -15,6 +15,10 @@ const SEND_INTERVAL_SECONDS = Number(
 const TEST_SMS_CODE = process.env.TEST_SMS_CODE || "123456";
 
 function hasTencentSmsConfig() {
+  if (process.env.SMS_PROVIDER !== "tencent") {
+    return false;
+  }
+
   return Boolean(
     process.env.TENCENTCLOUD_SECRET_ID &&
       process.env.TENCENTCLOUD_SECRET_KEY &&
