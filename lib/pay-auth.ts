@@ -13,7 +13,9 @@ export async function getPayUser(req: Request) {
   }
 
   const cookieStore = await cookies();
-  const wechatUserId = cookieStore.get("zishoo_user_id")?.value;
+  const wechatUserId =
+    cookieStore.get("zishoo_user_id")?.value ||
+    cookieStore.get("zishoo_user_id_client")?.value;
 
   if (wechatUserId) {
     return {

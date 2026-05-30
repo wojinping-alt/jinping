@@ -18,7 +18,9 @@ export async function GET() {
   }
 
   const cookieStore = await cookies();
-  const userId = cookieStore.get("zishoo_user_id")?.value;
+  const userId =
+    cookieStore.get("zishoo_user_id")?.value ||
+    cookieStore.get("zishoo_user_id_client")?.value;
   const encodedName = cookieStore.get("zishoo_user_name")?.value;
 
   return NextResponse.json({
@@ -28,4 +30,3 @@ export async function GET() {
     provider: userId ? "wechat" : undefined,
   });
 }
-

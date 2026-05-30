@@ -145,6 +145,13 @@ export async function PUT(req: Request) {
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
     });
+    response.cookies.set("zishoo_user_id_client", `phone:${normalized.e164}`, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: isHttps,
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
     response.cookies.set("zishoo_user_name", encodeURIComponent(maskPhone(normalized.e164)), {
       httpOnly: false,
       sameSite: "lax",

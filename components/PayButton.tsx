@@ -24,8 +24,19 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
     : {};
 }
 
+function hasClientLoginHint() {
+  if (typeof window === "undefined") return false;
+  return (
+    window.localStorage.getItem("zishoo_logged_in") === "1" ||
+    document.cookie.includes("zishoo_user_id_client=")
+  );
+}
+
 async function hasSiteSession() {
-  const res = await fetch("/api/auth/me", { cache: "no-store" });
+  const res = await fetch("/api/auth/me", {
+    cache: "no-store",
+    credentials: "include",
+  });
   if (!res.ok) return false;
   const data = await res.json();
   return Boolean(data.loggedIn);
@@ -62,6 +73,7 @@ export default function PayButton({
         `/api/pay/status?orderId=${nextOrderId}&courseId=${courseId}`,
         {
           cache: "no-store",
+          credentials: "include",
           headers: await getAuthHeaders(),
         }
       );
@@ -71,7 +83,7 @@ export default function PayButton({
         if (timerRef.current) clearInterval(timerRef.current);
         setShowQr(false);
         setMessage("支付成功，课程已解锁");
-        router.refresh();
+        window.location.reload();
       }
     }, 3000);
   };
@@ -82,9 +94,11 @@ export default function PayButton({
     } = await supabase.auth.getSession();
     const siteLoggedIn = await hasSiteSession();
 
-    if (!userId && !session?.user && !siteLoggedIn) {
+    if (!userId && !session?.user && !siteLoggedIn && !hasClientLoginHint()) {
       setMessage("请先登录后再购买课程");
-      router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+      window.location.href = `/login?next=${encodeURIComponent(
+        window.location.pathname
+      )}`;
       return;
     }
 
@@ -94,6 +108,7 @@ export default function PayButton({
     try {
       const res = await fetch("/api/pay", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           ...(await getAuthHeaders()),
@@ -102,6 +117,16 @@ export default function PayButton({
       });
 
       const data = (await res.json()) as PayResponse;
+
+      if (res.status === 401) {
+        window.localStorage.removeItem("zishoo_logged_in");
+        window.localStorage.removeItem("zishoo_user_id");
+        setMessage("登录状态已失效，请重新登录");
+        window.location.href = `/login?next=${encodeURIComponent(
+          window.location.pathname
+        )}`;
+        return;
+      }
 
       if (!res.ok) {
         setMessage(data.error || "创建支付失败");

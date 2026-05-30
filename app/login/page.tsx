@@ -87,6 +87,14 @@ function LoginContent() {
         return;
       }
 
+      window.localStorage.setItem("zishoo_logged_in", "1");
+      if (data.userId) {
+        window.localStorage.setItem("zishoo_user_id", data.userId);
+        document.cookie = `zishoo_user_id_client=${encodeURIComponent(
+          data.userId
+        )}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax; Secure`;
+      }
+
       setMessage("登录成功，正在返回课程页...");
       window.location.replace(nextUrl);
     } catch (error) {
