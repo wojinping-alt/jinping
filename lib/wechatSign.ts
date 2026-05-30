@@ -13,7 +13,7 @@ export function signRequest({
 }: {
   method: string;
   url: string;
-  body: any;
+  body: unknown;
   mchid: string;
   serialNo: string;
   privateKey: string;

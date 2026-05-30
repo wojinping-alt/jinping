@@ -1,93 +1,113 @@
-import fs from "fs";
-import path from "path";
-import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { getPayUser } from "@/lib/pay-auth";
+import {
+  buildNotifyUrl,
+  createWechatPayOrder,
+  detectPayMode,
+} from "@/lib/wechat-pay";
 
 export async function POST(req: Request) {
   try {
-    // 1️⃣ 获取前端传来的价格
-    const { price } = await req.json();
+    const { supabase, user } = await getPayUser(req);
 
-    if (!price || typeof price !== "number") {
-      return NextResponse.json({ success: false, error: "价格必须是数字" });
+    if (!user) {
+      return NextResponse.json({ error: "请先登录后再购买课程" }, { status: 401 });
     }
 
-    // 2️⃣ 微信支付配置
-    const appid = "wxaabb8e5561161ecb"; // 你的公众号AppID
-    const mchid = "1746250881"; // 商户号
-    const serialNo = "3E10EC19F81B27606EBB1B314B07B6EEF5D5DFD3"; // 证书序列号
-    const apiV3Key = "Zishu123456789101112131415161718"; // APIv3密钥
+    const { courseId } = await req.json();
 
-    // 3️⃣ 读取本地私钥
-    const privateKey = fs.readFileSync(
-      path.join(process.cwd(), "server/certs/apiclient_key.pem"),
-      "utf8"
-    );
+    if (!courseId) {
+      return NextResponse.json({ error: "缺少课程 ID" }, { status: 400 });
+    }
 
-    // 4️⃣ 生成订单号
-    const out_trade_no = Date.now().toString();
+    const { data: existingAccess } = await supabase
+      .from("user_courses")
+      .select("course_id")
+      .eq("course_id", courseId)
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-    // 5️⃣ 构造请求体
-    const body = {
-      appid,
-      mchid,
-      description: "汉字课程购买",
-      out_trade_no,
-      notify_url: "https://zishoo.cn/api/wechat/notify", // 你回调接口地址必须公网可访问
-      amount: {
-        total: price * 100, // 分
-        currency: "CNY",
-      },
-    };
+    if (existingAccess) {
+      return NextResponse.json({ paid: true, message: "课程已购买" });
+    }
 
-    const urlPath = "/v3/pay/transactions/native";
-    const url = "https://api.mch.weixin.qq.com" + urlPath;
+    const { data: course, error: courseError } = await supabase
+      .from("courses")
+      .select("id,title,price")
+      .eq("id", courseId)
+      .single();
 
-    const bodyStr = JSON.stringify(body);
+    if (courseError || !course) {
+      return NextResponse.json({ error: "课程不存在" }, { status: 404 });
+    }
 
-    // 6️⃣ 生成签名
-    const timestamp = Math.floor(Date.now() / 1000);
-    const nonceStr = crypto.randomBytes(16).toString("hex");
+    const amount = Number(course.price);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: "课程价格配置错误" }, { status: 400 });
+    }
 
-    const message = `POST\n${urlPath}\n${timestamp}\n${nonceStr}\n${bodyStr}\n`;
+    const outTradeNo = `HS${Date.now()}${Math.random()
+      .toString(36)
+      .slice(2, 8)
+      .toUpperCase()}`;
+    const userAgent = req.headers.get("user-agent") || "";
+    const mode = detectPayMode(userAgent);
 
-    const signature = crypto
-      .createSign("RSA-SHA256")
-      .update(message)
-      .sign(privateKey, "base64");
+    if (mode === "jsapi") {
+      return NextResponse.json(
+        {
+          mode,
+          error:
+            "微信内自动支付需要先绑定用户 openid。请在手机浏览器打开本页使用微信 H5 支付，或后续接入公众号 OAuth 后启用 JSAPI。",
+        },
+        { status: 400 }
+      );
+    }
 
-    const authorization = `WECHATPAY2-SHA256-RSA2048 mchid="${mchid}",serial_no="${serialNo}",nonce_str="${nonceStr}",timestamp="${timestamp}",signature="${signature}"`;
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        course_id: course.id,
+        out_trade_no: outTradeNo,
+        amount,
+        status: "pending",
+      })
+      .select("id,out_trade_no")
+      .single();
 
-    // 7️⃣ 请求微信支付
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: authorization,
-        "Content-Type": "application/json",
-      },
-      body: bodyStr,
+    if (orderError || !order) {
+      return NextResponse.json(
+        { error: orderError?.message || "创建订单失败" },
+        { status: 500 }
+      );
+    }
+
+    const payData = await createWechatPayOrder({
+      description: `购买课程 ${course.title}`.slice(0, 127),
+      outTradeNo,
+      amountFen: Math.round(amount * 100),
+      notifyUrl: buildNotifyUrl(req),
+      mode,
+      clientIp:
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        req.headers.get("x-real-ip") ||
+        "127.0.0.1",
+      userAgent,
     });
 
-    // 8️⃣ 打印微信原始返回，方便调试
-    const text = await res.text();
-    console.log("微信支付返回原始内容：", text);
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      console.error("解析微信返回JSON失败：", e);
-      return NextResponse.json({ success: false, error: text });
-    }
-
-    // 9️⃣ 返回二维码链接给前端
     return NextResponse.json({
-      success: true,
-      code_url: data.code_url ?? "",
-      raw: data,
+      orderId: order.id,
+      outTradeNo,
+      mode,
+      codeUrl: payData.code_url,
+      h5Url: payData.h5_url,
     });
-  } catch (err: any) {
-    console.error("支付接口异常：", err);
-    return NextResponse.json({ success: false, error: err.message });
+  } catch (error) {
+    console.error("Create payment failed:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "创建支付失败" },
+      { status: 500 }
+    );
   }
 }

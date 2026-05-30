@@ -1,61 +1,90 @@
 import { NextResponse } from "next/server";
 
+function getBaseUrl(req: Request) {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    new URL(req.url).origin
+  ).replace(/\/$/, "");
+}
+
 export async function GET(req: Request) {
+  const baseUrl = getBaseUrl(req);
+
   try {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get("code");
 
     if (!code) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/login`
-      );
+      return NextResponse.redirect(`${baseUrl}/login?error=missing_code`);
     }
 
-    const appid = process.env.WECHAT_APP_ID!;
-    const secret = process.env.WECHAT_APP_SECRET!;
+    const userAgent = req.headers.get("user-agent") || "";
+    const isWechatBrowser = userAgent.toLowerCase().includes("micromessenger");
+    const appid = isWechatBrowser
+      ? process.env.WECHAT_APP_ID || process.env.NEXT_PUBLIC_WECHAT_APP_ID
+      : process.env.WECHAT_OPEN_APP_ID;
+    const secret = isWechatBrowser
+      ? process.env.WECHAT_APP_SECRET
+      : process.env.WECHAT_OPEN_APP_SECRET;
 
-    // 1️⃣ 用 code 换 token
+    if (!appid || !secret) {
+      return NextResponse.redirect(`${baseUrl}/login?error=missing_wechat_config`);
+    }
+
     const tokenRes = await fetch(
-      `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`
+      "https://api.weixin.qq.com/sns/oauth2/access_token" +
+        `?appid=${appid}` +
+        `&secret=${secret}` +
+        `&code=${code}` +
+        "&grant_type=authorization_code",
+      { cache: "no-store" }
     );
-
     const tokenData = await tokenRes.json();
 
-    if (!tokenData.access_token) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/login`
-      );
+    if (!tokenData.access_token || !tokenData.openid) {
+      console.error("WeChat token failed:", tokenData);
+      return NextResponse.redirect(`${baseUrl}/login?error=wechat_token_failed`);
     }
 
-    // 2️⃣ 获取用户信息
     const userRes = await fetch(
-      `https://api.weixin.qq.com/sns/userinfo?access_token=${tokenData.access_token}&openid=${tokenData.openid}&lang=zh_CN`
+      "https://api.weixin.qq.com/sns/userinfo" +
+        `?access_token=${tokenData.access_token}` +
+        `&openid=${tokenData.openid}` +
+        "&lang=zh_CN",
+      { cache: "no-store" }
     );
+    const wechatUser = await userRes.json();
 
-    const user = await userRes.json();
+    const stableId = `wechat:${wechatUser.unionid || tokenData.openid}`;
+    const displayName = wechatUser.nickname || "微信用户";
+    const response = NextResponse.redirect(`${baseUrl}/courses`);
 
-    console.log("微信用户：", user);
-
-    // 3️⃣ 写入 cookie（最简单登录态）
-    const response = NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_SITE_URL}`
-    );
-
-    response.cookies.set(
-      "wechat_user",
-      JSON.stringify(user),
-      {
-        httpOnly: false,
-        path: "/",
-      }
-    );
+    response.cookies.set("zishoo_user_id", stableId, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: baseUrl.startsWith("https://"),
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    response.cookies.set("zishoo_user_name", encodeURIComponent(displayName), {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: baseUrl.startsWith("https://"),
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    response.cookies.set("zishoo_wechat_openid", tokenData.openid, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: baseUrl.startsWith("https://"),
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
 
     return response;
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({
-      success: false,
-      error: "微信登录失败",
-    });
+    console.error("WeChat login failed:", err);
+    return NextResponse.redirect(`${baseUrl}/login?error=wechat_login_failed`);
   }
 }

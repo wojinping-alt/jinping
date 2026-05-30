@@ -1,65 +1,31 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useRef } from "react";
 
 export default function VideoPlayer({
   src,
-  courseId,
+  unlocked = false,
+  previewSeconds = 10,
 }: {
   src: string;
-  courseId: number;
+  courseId?: number | string;
+  unlocked?: boolean;
+  previewSeconds?: number;
 }) {
-  const videoRef =
-    useRef<HTMLVideoElement>(null);
-
+  const videoRef = useRef<HTMLVideoElement>(null);
   const alertedRef = useRef(false);
-
-  const [isUnlocked, setIsUnlocked] =
-    useState(false);
-
-  useEffect(() => {
-    async function checkAccess() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data } = await supabase
-        .from("user_courses")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("course_id", courseId)
-        .single();
-
-      if (data) {
-        setIsUnlocked(true);
-      }
-    }
-
-    checkAccess();
-  }, [courseId]);
 
   function handleTimeUpdate() {
     const video = videoRef.current;
+    if (!video || unlocked) return;
 
-    if (!video) return;
-
-    if (
-      !isUnlocked &&
-      video.currentTime >= 10
-    ) {
-      video.currentTime = 10;
-
+    if (video.currentTime >= previewSeconds) {
+      video.currentTime = previewSeconds;
       video.pause();
 
       if (!alertedRef.current) {
         alertedRef.current = true;
-
-        alert(
-          "请购买课程后继续观看"
-        );
+        alert("请购买课程后继续观看");
       }
     }
   }
@@ -74,3 +40,4 @@ export default function VideoPlayer({
     />
   );
 }
+

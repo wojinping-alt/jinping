@@ -1,33 +1,21 @@
+import Link from "next/link";
+
 export default function PayPage() {
   return (
-    <main className="min-h-screen bg-[#FFF8EE] flex flex-col items-center justify-center p-6">
-      
-      <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
-
-        <h1 className="text-3xl font-bold text-[#D97706] mb-4">
-          解锁完整课程
-        </h1>
-
-        <p className="text-gray-600 mb-8">
-          支付后即可永久观看全部内容
+    <main className="min-h-screen bg-orange-50 p-6">
+      <div className="mx-auto max-w-xl rounded-xl bg-white p-8 shadow">
+        <h1 className="text-2xl font-bold text-orange-600">课程支付</h1>
+        <p className="mt-4 text-gray-600">
+          请从课程详情页发起购买。电脑端会显示微信支付二维码，手机浏览器会跳转到微信支付。
         </p>
-
-        <div className="text-5xl mb-6">📱</div>
-
-        <button
-          className="w-full bg-green-500 hover:bg-green-600 text-white text-lg font-semibold py-4 rounded-full mb-4"
+        <Link
+          href="/courses"
+          className="mt-6 inline-flex rounded-lg bg-orange-500 px-5 py-3 text-white hover:bg-orange-600"
         >
-          微信支付
-        </button>
-
-        <button
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-4 rounded-full"
-        >
-          支付宝支付
-        </button>
-
+          返回课程列表
+        </Link>
       </div>
-
     </main>
   );
 }
+
