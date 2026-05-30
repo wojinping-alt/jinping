@@ -78,10 +78,24 @@ function readPrivateKeyFromFile() {
 }
 
 function readPrivateKeyFromBase64() {
-  const encoded = process.env.WECHAT_PAY_PRIVATE_KEY_BASE64;
+  const chunked = readChunkedPrivateKey();
+  const encoded = chunked || process.env.WECHAT_PAY_PRIVATE_KEY_BASE64;
   if (!encoded) return "";
 
-  return Buffer.from(encoded, "base64").toString("utf8");
+  const normalized = encoded.replace(/-/g, "+").replace(/_/g, "/");
+  return Buffer.from(normalized, "base64").toString("utf8");
+}
+
+function readChunkedPrivateKey() {
+  const chunks: string[] = [];
+
+  for (let index = 1; index <= 20; index += 1) {
+    const chunk = process.env[`WECHAT_PAY_PRIVATE_KEY_B64_${index}`];
+    if (!chunk) break;
+    chunks.push(chunk);
+  }
+
+  return chunks.join("");
 }
 
 function signRequest(
