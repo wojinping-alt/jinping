@@ -39,7 +39,8 @@ export function getWechatConfig(): WechatConfig {
   const mchid = process.env.WECHAT_PAY_MCH_ID;
   const serialNo = process.env.WECHAT_PAY_SERIAL_NO;
   const privateKey =
-    process.env.WECHAT_PAY_PRIVATE_KEY || readPrivateKeyFromFile();
+    process.env.WECHAT_PAY_PRIVATE_KEY?.replace(/\\n/g, "\n") ||
+    readPrivateKeyFromFile();
 
   const missing = [
     ["WECHAT_PAY_APPID", appid],
@@ -196,4 +197,3 @@ export function buildNotifyUrl(req: Request) {
   const url = new URL(req.url);
   return `${url.origin}/api/pay/notify`;
 }
-
