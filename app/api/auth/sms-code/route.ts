@@ -12,6 +12,17 @@ const EXPIRE_MINUTES = Number(process.env.SMS_CODE_EXPIRE_MINUTES || "5");
 const SEND_INTERVAL_SECONDS = Number(
   process.env.SMS_CODE_SEND_INTERVAL_SECONDS || "60"
 );
+const TEST_SMS_CODE = process.env.TEST_SMS_CODE || "123456";
+
+function hasTencentSmsConfig() {
+  return Boolean(
+    process.env.TENCENTCLOUD_SECRET_ID &&
+      process.env.TENCENTCLOUD_SECRET_KEY &&
+      process.env.TENCENT_SMS_SDK_APP_ID &&
+      process.env.TENCENT_SMS_SIGN_NAME &&
+      process.env.TENCENT_SMS_TEMPLATE_ID
+  );
+}
 
 function getDatabaseSetupMessage(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
@@ -53,7 +64,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const code = createSmsCode();
+    const code = hasTencentSmsConfig() ? createSmsCode() : TEST_SMS_CODE;
     const expiresAt = new Date(
       Date.now() + EXPIRE_MINUTES * 60 * 1000
     ).toISOString();
@@ -68,12 +79,15 @@ export async function POST(req: Request) {
 
     if (insertError) throw insertError;
 
-    await sendTencentSmsCode(normalized.e164, code);
+    if (hasTencentSmsConfig()) {
+      await sendTencentSmsCode(normalized.e164, code);
+    }
 
     return NextResponse.json({
       success: true,
       phone: maskPhone(normalized.e164),
       expiresAt,
+      testMode: !hasTencentSmsConfig(),
     });
   } catch (error) {
     console.error("Send SMS code failed:", error);
@@ -144,4 +158,3 @@ export async function PUT(req: Request) {
     );
   }
 }
-

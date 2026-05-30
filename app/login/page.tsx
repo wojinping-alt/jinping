@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [timeLeft, setTimeLeft] = useState(0);
+  const [testMode, setTestMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,7 +48,12 @@ export default function LoginPage() {
 
       setSent(true);
       setExpiresAt(data.expiresAt);
-      setMessage(`验证码已发送到 ${data.phone}`);
+      setTestMode(Boolean(data.testMode));
+      setMessage(
+        data.testMode
+          ? `测试模式：请输入验证码 123456。手机号 ${data.phone} 不会收到短信。`
+          : `验证码已发送到 ${data.phone}`
+      );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "验证码发送失败");
     } finally {
@@ -91,6 +97,9 @@ export default function LoginPage() {
         <p className="mt-3 text-center text-sm text-gray-500">
           输入手机号，接收腾讯云短信验证码后即可登录购买课程。
         </p>
+        <p className="mt-2 text-center text-xs text-orange-600">
+          当前可用测试验证码：123456
+        </p>
 
         <div className="mt-6">
           <input
@@ -115,7 +124,7 @@ export default function LoginPage() {
               className="w-full rounded-lg border border-gray-200 p-3 outline-none focus:border-green-500"
             />
             <p className="mt-2 text-sm text-gray-500">
-              验证码剩余 {timeLeft} 秒
+              {testMode ? "测试验证码：123456，" : ""}验证码剩余 {timeLeft} 秒
             </p>
           </div>
         )}
@@ -156,4 +165,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
