@@ -1,7 +1,13 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
+function getSafeNextUrl(value: string | null) {
+  if (!value || !value.startsWith("/")) return "/courses";
+  if (value.startsWith("//")) return "/courses";
+  return value;
+}
 
 function LoginContent() {
   const [phone, setPhone] = useState("");
@@ -12,9 +18,8 @@ function LoginContent() {
   const [expiresAt, setExpiresAt] = useState("");
   const [timeLeft, setTimeLeft] = useState(0);
   const [testMode, setTestMode] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const nextUrl = searchParams.get("next") || "/courses";
+  const nextUrl = getSafeNextUrl(searchParams.get("next"));
 
   useEffect(() => {
     if (!expiresAt) return;
@@ -39,6 +44,7 @@ function LoginContent() {
       const res = await fetch("/api/auth/sms-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ phone }),
       });
       const data = await res.json();
@@ -71,6 +77,7 @@ function LoginContent() {
       const res = await fetch("/api/auth/sms-code", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ phone, code }),
       });
       const data = await res.json();
@@ -80,9 +87,8 @@ function LoginContent() {
         return;
       }
 
-      setMessage("登录成功，正在返回...");
-      router.push(nextUrl);
-      router.refresh();
+      setMessage("登录成功，正在返回课程页...");
+      window.location.replace(nextUrl);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "登录失败");
     } finally {
@@ -92,7 +98,7 @@ function LoginContent() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
+      <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-md">
         <h1 className="text-center text-2xl font-bold text-gray-900">
           手机验证码登录
         </h1>
@@ -109,8 +115,8 @@ function LoginContent() {
             inputMode="numeric"
             placeholder="请输入手机号"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 p-3 outline-none focus:border-green-500"
+            onChange={(event) => setPhone(event.target.value)}
+            className="w-full rounded-md border border-gray-200 p-3 outline-none focus:border-green-500"
           />
         </div>
 
@@ -122,8 +128,8 @@ function LoginContent() {
               maxLength={6}
               placeholder="请输入 6 位验证码"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              className="w-full rounded-lg border border-gray-200 p-3 outline-none focus:border-green-500"
+              onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
+              className="w-full rounded-md border border-gray-200 p-3 outline-none focus:border-green-500"
             />
             <p className="mt-2 text-sm text-gray-500">
               {testMode ? "测试验证码：123456，" : ""}验证码剩余 {timeLeft} 秒
@@ -132,7 +138,7 @@ function LoginContent() {
         )}
 
         {message && (
-          <p className="mt-4 rounded-lg bg-orange-50 p-3 text-sm text-orange-700">
+          <p className="mt-4 rounded-md bg-orange-50 p-3 text-sm text-orange-700">
             {message}
           </p>
         )}
@@ -141,7 +147,7 @@ function LoginContent() {
           <button
             onClick={sendCode}
             disabled={loading}
-            className="mt-6 w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-white hover:bg-green-600 disabled:bg-green-300"
+            className="mt-6 w-full rounded-md bg-green-500 px-5 py-3 font-medium text-white hover:bg-green-600 disabled:bg-green-300"
           >
             {loading ? "发送中..." : "发送验证码"}
           </button>
@@ -150,14 +156,14 @@ function LoginContent() {
             <button
               onClick={verifyCode}
               disabled={loading}
-              className="w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-white hover:bg-green-600 disabled:bg-green-300"
+              className="w-full rounded-md bg-green-500 px-5 py-3 font-medium text-white hover:bg-green-600 disabled:bg-green-300"
             >
               {loading ? "登录中..." : "登录"}
             </button>
             <button
               onClick={sendCode}
               disabled={loading || timeLeft > 240}
-              className="w-full rounded-lg border border-green-500 px-5 py-3 font-medium text-green-600 hover:bg-green-50 disabled:border-green-300 disabled:text-green-300"
+              className="w-full rounded-md border border-green-500 px-5 py-3 font-medium text-green-600 hover:bg-green-50 disabled:border-green-300 disabled:text-green-300"
             >
               重新发送验证码
             </button>
@@ -175,4 +181,3 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-
