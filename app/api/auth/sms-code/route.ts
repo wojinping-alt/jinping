@@ -15,8 +15,16 @@ const SEND_INTERVAL_SECONDS = Number(
 const TEST_SMS_CODE = process.env.TEST_SMS_CODE || "123456";
 
 function getCookieDomain(req: Request) {
-  const host = req.headers.get("host")?.split(":")[0];
-  return host?.endsWith("zishoo.cn") ? ".zishoo.cn" : undefined;
+  const configuredSite = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const forwardedHost = req.headers.get("x-forwarded-host")?.split(":")[0];
+  const host =
+    forwardedHost ||
+    req.headers.get("host")?.split(":")[0] ||
+    new URL(req.url).hostname;
+
+  return configuredSite.includes("zishoo.cn") || host.endsWith("zishoo.cn")
+    ? ".zishoo.cn"
+    : undefined;
 }
 
 function hasTencentSmsConfig() {
