@@ -14,6 +14,11 @@ const SEND_INTERVAL_SECONDS = Number(
 );
 const TEST_SMS_CODE = process.env.TEST_SMS_CODE || "123456";
 
+function getCookieDomain(req: Request) {
+  const host = req.headers.get("host")?.split(":")[0];
+  return host?.endsWith("zishoo.cn") ? ".zishoo.cn" : undefined;
+}
+
 function hasTencentSmsConfig() {
   if (process.env.SMS_PROVIDER !== "tencent") {
     return false;
@@ -137,6 +142,7 @@ export async function PUT(req: Request) {
       name: maskPhone(normalized.e164),
     });
     const isHttps = new URL(req.url).protocol === "https:";
+    const domain = getCookieDomain(req);
 
     response.cookies.set("zishoo_user_id", `phone:${normalized.e164}`, {
       httpOnly: true,
@@ -144,6 +150,7 @@ export async function PUT(req: Request) {
       secure: isHttps,
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
+      domain,
     });
     response.cookies.set("zishoo_user_id_client", `phone:${normalized.e164}`, {
       httpOnly: false,
@@ -151,6 +158,7 @@ export async function PUT(req: Request) {
       secure: isHttps,
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
+      domain,
     });
     response.cookies.set("zishoo_user_name", encodeURIComponent(maskPhone(normalized.e164)), {
       httpOnly: false,
@@ -158,6 +166,7 @@ export async function PUT(req: Request) {
       secure: isHttps,
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
+      domain,
     });
 
     return response;
