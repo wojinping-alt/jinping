@@ -71,7 +71,7 @@ export default async function MyCoursesPage() {
 
         <div className="grid gap-5 md:grid-cols-2">
           {courses.map((course) => (
-            <Link
+            <a
               key={course.id}
               href={`/lesson/${course.id}`}
               className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
@@ -81,7 +81,7 @@ export default async function MyCoursesPage() {
               <p className="mt-5 text-sm font-medium text-gray-700">
                 继续学习
               </p>
-            </Link>
+            </a>
           ))}
         </div>
       </div>

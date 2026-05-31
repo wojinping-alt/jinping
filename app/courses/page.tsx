@@ -105,7 +105,7 @@ export default async function CoursesPage() {
             const count = episodeCounts.get(String(course.id));
 
             return (
-              <Link
+              <a
                 key={course.id}
                 href={`/lesson/${course.id}`}
                 className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
@@ -136,7 +136,7 @@ export default async function CoursesPage() {
                 {course.is_free_preview && (
                   <p className="mt-3 text-sm text-green-600">支持试看</p>
                 )}
-              </Link>
+              </a>
             );
           })}
         </div>
