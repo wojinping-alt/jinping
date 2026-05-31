@@ -13,7 +13,7 @@ const collection = {
   code: "AI",
   title: "汉字就这么简单",
   description: "按集购买或购买合集后观看全部内容。",
-  price: 0.04,
+  price: 79.6,
   dir: "D:\\批量视频\\AI营销\\新建文件夹 (2)",
 };
 
@@ -96,7 +96,7 @@ function buildSql(result) {
     );
 
     lines.push(
-      `insert into public.courses (id, title, description, price, video_url, is_free_preview) values (${episodeCourseId}, '${sqlString(title)}', '单集付费课程。', 0.01, '${sqlString(episode.mediaUrl)}', false) on conflict (id) do update set title = excluded.title, description = excluded.description, price = excluded.price, video_url = excluded.video_url, is_free_preview = excluded.is_free_preview;`
+      `insert into public.courses (id, title, description, price, video_url, is_free_preview) values (${episodeCourseId}, '${sqlString(title)}', '单集付费课程。', 19.9, '${sqlString(episode.mediaUrl)}', false) on conflict (id) do update set title = excluded.title, description = excluded.description, price = excluded.price, video_url = excluded.video_url, is_free_preview = excluded.is_free_preview;`
     );
 
     lines.push(
