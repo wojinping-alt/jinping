@@ -2,23 +2,21 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-orange-50 flex flex-col items-center justify-center p-6">
-      <h1 className="text-5xl font-bold text-orange-600">
-        字书 Zishoo
+    <main className="flex min-h-screen flex-col items-center justify-center bg-orange-50 p-6 text-center">
+      <h1 className="max-w-4xl text-4xl font-bold leading-tight text-orange-600 sm:text-6xl">
+        一眼千年，重新看懂汉字之美
       </h1>
 
-      <p className="mt-6 text-lg text-gray-600 text-center max-w-xl">
-        用动画和故事学习汉字，让中文学习更有趣。
+      <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-700">
+        从 300 个种子字出发，理解文字构形、书体演变与书法造型，让识字与书写回到同一条文化脉络。
       </p>
 
       <Link
         href="/courses"
-        className="mt-10 rounded-2xl bg-orange-500 px-8 py-4 text-white text-xl shadow hover:bg-orange-600"
+        className="mt-10 rounded-2xl bg-orange-500 px-8 py-4 text-xl text-white shadow hover:bg-orange-600"
       >
         进入课程
-      </Link>   <p className="mt-4 text-green-600 text-xl">
-        部署测试成功 自动部署测试 SUCCESS
-      </p>
+      </Link>
     </main>
   );
 }
