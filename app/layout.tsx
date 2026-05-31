@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import CanonicalRedirect from "@/components/CanonicalRedirect";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body>
+        <CanonicalRedirect />
         <Navbar />
 
         {children}
