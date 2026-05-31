@@ -13,7 +13,7 @@ const collection = {
   code: "AI",
   title: "汉字就这么简单",
   description: "按集购买或购买合集后观看全部内容。",
-  price: 0.01,
+  price: 0.04,
   dir: "D:\\批量视频\\AI营销\\新建文件夹 (2)",
 };
 
