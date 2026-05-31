@@ -16,22 +16,31 @@ function getCookieDomain(req: Request) {
 export async function POST(req: Request) {
   const response = NextResponse.json({ success: true });
   const isHttps = new URL(req.url).protocol === "https:";
-  const domain = getCookieDomain(req);
-
-  for (const name of [
+  const sharedDomain = getCookieDomain(req);
+  const names = [
     "zishoo_user_id",
     "zishoo_user_id_client",
     "zishoo_user_name",
     "zishoo_wechat_openid",
-  ]) {
-    response.cookies.set(name, "", {
-      httpOnly: name !== "zishoo_user_name",
-      sameSite: "lax",
+  ];
+
+  for (const name of names) {
+    const baseOptions = {
+      httpOnly: name !== "zishoo_user_name" && name !== "zishoo_user_id_client",
+      sameSite: "lax" as const,
       secure: isHttps,
       path: "/",
       maxAge: 0,
-      domain,
-    });
+    };
+
+    response.cookies.set(name, "", baseOptions);
+
+    if (sharedDomain) {
+      response.cookies.set(name, "", {
+        ...baseOptions,
+        domain: sharedDomain,
+      });
+    }
   }
 
   return response;

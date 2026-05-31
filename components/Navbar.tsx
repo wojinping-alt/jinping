@@ -25,7 +25,11 @@ export default function Navbar() {
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    localStorage.removeItem("zishoo_logged_in");
+    localStorage.removeItem("zishoo_user_id");
+    document.cookie = "zishoo_user_id_client=; path=/; max-age=0; SameSite=Lax; Secure";
+    setUser({ loggedIn: false });
     location.href = "/";
   }
 
@@ -69,4 +73,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
