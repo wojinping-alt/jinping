@@ -10,12 +10,27 @@ function getCookieDomain(req: Request) {
 
   return configuredSite.includes("zishoo.cn") || host.endsWith("zishoo.cn")
     ? ".zishoo.cn"
-    : undefined;
+    : "";
+}
+
+function expiredCookie(name: string, options?: { domain?: string; httpOnly?: boolean }) {
+  const parts = [
+    `${name}=`,
+    "Path=/",
+    "Max-Age=0",
+    "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+    "SameSite=Lax",
+    "Secure",
+  ];
+
+  if (options?.domain) parts.push(`Domain=${options.domain}`);
+  if (options?.httpOnly) parts.push("HttpOnly");
+
+  return parts.join("; ");
 }
 
 export async function POST(req: Request) {
   const response = NextResponse.json({ success: true });
-  const isHttps = new URL(req.url).protocol === "https:";
   const sharedDomain = getCookieDomain(req);
   const names = [
     "zishoo_user_id",
@@ -25,21 +40,15 @@ export async function POST(req: Request) {
   ];
 
   for (const name of names) {
-    const baseOptions = {
-      httpOnly: name !== "zishoo_user_name" && name !== "zishoo_user_id_client",
-      sameSite: "lax" as const,
-      secure: isHttps,
-      path: "/",
-      maxAge: 0,
-    };
+    const httpOnly = name !== "zishoo_user_name" && name !== "zishoo_user_id_client";
 
-    response.cookies.set(name, "", baseOptions);
+    response.headers.append("Set-Cookie", expiredCookie(name, { httpOnly }));
 
     if (sharedDomain) {
-      response.cookies.set(name, "", {
-        ...baseOptions,
-        domain: sharedDomain,
-      });
+      response.headers.append(
+        "Set-Cookie",
+        expiredCookie(name, { domain: sharedDomain, httpOnly })
+      );
     }
   }
 

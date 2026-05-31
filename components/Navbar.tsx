@@ -29,6 +29,9 @@ export default function Navbar() {
     localStorage.removeItem("zishoo_logged_in");
     localStorage.removeItem("zishoo_user_id");
     document.cookie = "zishoo_user_id_client=; path=/; max-age=0; SameSite=Lax; Secure";
+    document.cookie = "zishoo_user_id_client=; path=/; max-age=0; domain=.zishoo.cn; SameSite=Lax; Secure";
+    document.cookie = "zishoo_user_name=; path=/; max-age=0; SameSite=Lax; Secure";
+    document.cookie = "zishoo_user_name=; path=/; max-age=0; domain=.zishoo.cn; SameSite=Lax; Secure";
     setUser({ loggedIn: false });
     location.href = "/";
   }
