@@ -3,6 +3,7 @@ import PayButton from "@/components/PayButton";
 import { createClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
 import { toStableUuid } from "@/lib/stable-id";
+import Link from "next/link";
 
 type Course = {
   id: string;
@@ -145,7 +146,14 @@ export default async function LessonPage({
               <p className="mb-3 text-2xl font-bold text-red-500">
                 ¥{Number(course.price).toFixed(2)}
               </p>
-              {!hasPaid ? (
+              {!hasPaid && !userId ? (
+                <Link
+                  href={`/login?next=${encodeURIComponent(`/lesson/${course.id}`)}`}
+                  className="inline-flex rounded-md bg-red-500 px-5 py-3 font-medium text-white hover:bg-red-600"
+                >
+                  登录后购买课程
+                </Link>
+              ) : !hasPaid ? (
                 <PayButton
                   courseId={course.id}
                   price={course.price}
