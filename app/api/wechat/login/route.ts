@@ -30,7 +30,10 @@ export async function GET(req: Request) {
   ).toString("base64url");
 
   if (isWechatBrowser) {
-    const appid = process.env.WECHAT_APP_ID || process.env.NEXT_PUBLIC_WECHAT_APP_ID;
+    const appid =
+      process.env.WECHAT_APP_ID ||
+      process.env.NEXT_PUBLIC_WECHAT_APP_ID ||
+      process.env.WECHAT_PAY_APPID;
 
     if (!appid) {
       return NextResponse.json(

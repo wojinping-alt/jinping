@@ -67,7 +67,9 @@ export async function GET(req: Request) {
     const userAgent = req.headers.get("user-agent") || "";
     const isWechatBrowser = userAgent.toLowerCase().includes("micromessenger");
     const appid = isWechatBrowser
-      ? process.env.WECHAT_APP_ID || process.env.NEXT_PUBLIC_WECHAT_APP_ID
+      ? process.env.WECHAT_APP_ID ||
+        process.env.NEXT_PUBLIC_WECHAT_APP_ID ||
+        process.env.WECHAT_PAY_APPID
       : process.env.WECHAT_OPEN_APP_ID;
     const secret = isWechatBrowser
       ? process.env.WECHAT_APP_SECRET
