@@ -10,7 +10,6 @@ type Course = {
   title: string;
   description: string | null;
   price: number;
-  video_url: string | null;
 };
 
 type LessonState = {
@@ -37,7 +36,7 @@ async function loadLesson(id: string): Promise<LessonState> {
   try {
     const { data: course, error: courseError } = await supabase
       .from("courses")
-      .select("id,title,description,price,video_url")
+      .select("id,title,description,price")
       .eq("id", id)
       .single<Course>();
 
@@ -83,7 +82,7 @@ async function loadLesson(id: string): Promise<LessonState> {
 
     const { data: episodeRows, error: episodeError } = await supabase
       .from("course_episodes")
-      .select("id,episode_number,title,video_url")
+      .select("id,episode_number,title")
       .eq("course_id", id)
       .order("episode_number", { ascending: true })
       .returns<Episode[]>();
@@ -93,14 +92,10 @@ async function loadLesson(id: string): Promise<LessonState> {
         ? []
         : episodeRows.map((episode) => ({
             ...episode,
-            video_url: hasPaid ? episode.video_url : null,
           }));
 
     return {
-      course: {
-        ...course,
-        video_url: hasPaid ? course.video_url : null,
-      },
+      course,
       userId,
       hasPaid,
       episodes,
@@ -166,7 +161,6 @@ export default async function LessonPage({
         <EpisodePlayer
           courseId={course.id}
           episodes={episodes}
-          fallbackVideoUrl={course.video_url}
           unlocked={hasPaid}
         />
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import Hls from "hls.js";
 
 export default function VideoPlayer({
   src,
@@ -14,6 +15,36 @@ export default function VideoPlayer({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const alertedRef = useRef(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!src.includes(".m3u8")) {
+      video.src = src;
+      return;
+    }
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src;
+      return;
+    }
+
+    if (!Hls.isSupported()) {
+      video.src = src;
+      return;
+    }
+
+    const hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: false,
+    });
+
+    hls.loadSource(src);
+    hls.attachMedia(video);
+
+    return () => hls.destroy();
+  }, [src]);
 
   function handleTimeUpdate() {
     const video = videoRef.current;
@@ -41,7 +72,6 @@ export default function VideoPlayer({
       onTimeUpdate={handleTimeUpdate}
       onContextMenu={(event) => event.preventDefault()}
       className="w-full rounded-lg bg-black"
-      src={src}
     />
   );
 }
