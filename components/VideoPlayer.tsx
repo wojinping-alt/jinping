@@ -34,8 +34,12 @@ export default function VideoPlayer({
     <video
       ref={videoRef}
       controls
+      controlsList="nodownload noplaybackrate noremoteplayback"
+      disablePictureInPicture
+      disableRemotePlayback
       playsInline
       onTimeUpdate={handleTimeUpdate}
+      onContextMenu={(event) => event.preventDefault()}
       className="w-full rounded-lg bg-black"
       src={src}
     />

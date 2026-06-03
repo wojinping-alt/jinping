@@ -62,17 +62,6 @@ export default function EpisodePlayer({
             请先购买课程，购买后这里会显示完整视频播放器。
           </div>
         )}
-
-        {unlocked && activeEpisode?.video_url && (
-          <a
-            href={activeEpisode.video_url}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-flex rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-          >
-            打开当前集视频链接
-          </a>
-        )}
       </section>
 
       <aside className="rounded-lg border border-gray-200 bg-white">
