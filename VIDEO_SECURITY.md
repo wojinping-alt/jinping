@@ -1,16 +1,17 @@
 # 视频防下载配置
 
-网站代码已经做了以下防护：
+网站已经做了以下防护：
 
 - 课程页不再直接输出数据库里的视频地址。
 - 播放前必须请求 `/api/video/play`，服务端会校验登录和购买权限。
-- 如果配置了腾讯云 VOD Key 防盗链密钥，播放地址会变成短时效签名 URL。
+- 腾讯云 VOD 默认播放域名已经开启 Key 防盗链。
+- 播放地址会变成短时效签名 URL，未签名地址会返回 403。
 - 播放器支持 MP4 和 HLS `.m3u8`。
 - 前端播放器隐藏下载按钮、禁止右键、禁止画中画，并显示用户水印。
 
 ## EdgeOne 环境变量
 
-在 EdgeOne Pages 项目里添加：
+优先在 EdgeOne Pages 项目里添加：
 
 ```text
 TENCENT_VOD_ANTI_LEECH_KEY=腾讯云点播默认分发配置里的播放密钥
@@ -18,15 +19,13 @@ VIDEO_PLAY_EXPIRE_SECONDS=7200
 VIDEO_PLAY_RLIMIT=3
 ```
 
-`TENCENT_VOD_ANTI_LEECH_KEY` 必须和腾讯云点播控制台的 Key 防盗链播放密钥保持一致。
+如果没有添加 `TENCENT_VOD_ANTI_LEECH_KEY`，服务端会使用 `TENCENTCLOUD_SECRET_ID` 和 `TENCENTCLOUD_SECRET_KEY` 自动读取腾讯云点播默认播放密钥，并缓存在运行时内存里。
 
 ## 腾讯云点播控制台
 
-1. 打开腾讯云点播控制台。
-2. 进入分发播放配置。
-3. 开启 Key 防盗链。
-4. 复制播放密钥，填到 EdgeOne 的 `TENCENT_VOD_ANTI_LEECH_KEY`。
-5. 建议把 Referer 白名单限制为：
+当前已通过 API 开启默认播放域名 `1309315684.vod-qcloud.com` 的 Key 防盗链。
+
+建议后续在控制台把 Referer 白名单限制为：
 
 ```text
 https://www.zishoo.cn
@@ -35,11 +34,14 @@ https://zishoo.cn
 
 ## HLS 分片和加密
 
-普通 MP4 直链天然容易被下载。更接近小鹅通的方案是：
+已对当前课程视频执行腾讯云 VOD 预置模板 `Definition=14`：
 
-1. 在腾讯云点播创建转自适应码流或 HLS 私有加密任务。
-2. 对课程视频生成 `.m3u8` 播放地址。
-3. 把 `courses.video_url` 或 `course_episodes.video_url` 更新为 `.m3u8` 地址。
+```text
+Adpative-HLS-EncryptBase
+HLS + SimpleAES
+```
+
+数据库里的 `courses.video_url` 和 `course_episodes.video_url` 已经更新为 `.m3u8` 地址。
 
 腾讯云官方更推荐 HLS 私有加密或 DRM，而不是旧版 HLS 普通 AES 加密。
 

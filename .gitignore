@@ -36,6 +36,7 @@ dev-server.log
 vod-upload.env.local
 vod-upload-results.json
 vod-ai-upload-results.json
+vod-hls-*.json
 
 # vercel
 .vercel

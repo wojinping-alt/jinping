@@ -104,7 +104,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "视频还没有配置播放地址" }, { status: 404 });
   }
 
-  const signed = signVodUrl(videoUrl, user.id);
+  const signed = await signVodUrl(videoUrl, user.id);
   const displayUser = maskVideoUser(user.email || user.id);
 
   return NextResponse.json(
