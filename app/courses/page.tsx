@@ -19,7 +19,6 @@ type EpisodeCount = {
 
 const hiddenCourseIds = new Set(["1", "201", "202", "203", "204"]);
 const aiCollectionId = "103";
-const aiEpisodeIds = ["201", "202", "203", "204"];
 
 function getDatabaseErrorMessage(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
@@ -70,9 +69,6 @@ export default async function CoursesPage() {
   }
 
   const aiCollection = courses.find((course) => String(course.id) === aiCollectionId);
-  const aiEpisodes = courses.filter((course) =>
-    aiEpisodeIds.includes(String(course.id))
-  );
   const visibleCourses = courses.filter(
     (course) =>
       !hiddenCourseIds.has(String(course.id)) &&
@@ -119,11 +115,11 @@ export default async function CoursesPage() {
                     汉字就这么简单
                   </h2>
                   <p className="mt-2 text-gray-600">
-                    可选择购买完整合集，也可按单集购买。
+                    合集购买后可观看全部视频目录。
                   </p>
                 </div>
                 <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
-                  {episodeCounts.get(aiCollectionId) || aiEpisodes.length} 集
+                  {episodeCounts.get(aiCollectionId) || 0} 集
                 </span>
               </div>
 
@@ -135,31 +131,9 @@ export default async function CoursesPage() {
                   href={`/lesson/${aiCollection.id}`}
                   className="inline-flex justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
                 >
-                  合集付费
+                  查看合集
                 </a>
               </div>
-
-              {aiEpisodes.length > 0 && (
-                <div className="mt-5 border-t border-gray-100 pt-4">
-                  <p className="mb-3 text-sm font-medium text-gray-700">
-                    按集付费
-                  </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {aiEpisodes.map((episode) => (
-                      <a
-                        key={episode.id}
-                        href={`/lesson/${episode.id}`}
-                        className="rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      >
-                        <span className="block truncate">{episode.title}</span>
-                        <span className="mt-1 block text-red-500">
-                          ¥{Number(episode.price).toFixed(2)}
-                        </span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
             </section>
           )}
 
