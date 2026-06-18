@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="header">
+    <view class="brand">字书 Zishoo</view>
+    <view class="title">课程合集</view>
+    <view class="subtitle">购买后即可解锁对应目录视频。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state card">加载中...</view>
+  <view wx:elif="{{error}}" class="state card error">{{error}}</view>
+
+  <view wx:else class="course-list">
+    <view
+      wx:for="{{courses}}"
+      wx:key="id"
+      class="course card"
+      bindtap="openCourse"
+      data-id="{{item.id}}"
+    >
+      <view class="course-top">
+        <view class="course-title">{{item.title}}</view>
+        <view class="badge">{{item.episodeCount}}集</view>
+      </view>
+      <view class="course-desc">{{item.description}}</view>
+      <view class="course-bottom">
+        <view class="price">￥{{item.priceText}}</view>
+        <view class="link">查看目录</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,21 @@
+<view class="page player-page">
+  <view class="title">{{title}}</view>
+
+  <view wx:if="{{loading}}" class="state card">正在获取播放地址...</view>
+  <view wx:elif="{{error}}" class="state card error">{{error}}</view>
+
+  <view wx:else class="player-wrap">
+    <video
+      class="video"
+      src="{{playUrl}}"
+      title="{{title}}"
+      controls
+      autoplay
+      show-center-play-btn
+      enable-progress-gesture
+      object-fit="contain"
+    ></video>
+    <view class="watermark">{{watermark}}</view>
+    <view class="expire muted">播放地址短时有效，过期后重新进入本页即可。</view>
+  </view>
+</view>

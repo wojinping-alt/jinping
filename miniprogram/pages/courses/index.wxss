@@ -1,0 +1,85 @@
+.header {
+  margin-bottom: 28rpx;
+}
+
+.brand {
+  font-size: 42rpx;
+}
+
+.title {
+  margin-top: 24rpx;
+  font-size: 48rpx;
+  font-weight: 800;
+}
+
+.subtitle {
+  margin-top: 12rpx;
+  color: #6b7280;
+  font-size: 28rpx;
+}
+
+.state {
+  padding: 40rpx;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.course {
+  padding: 32rpx;
+}
+
+.course-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.course-title {
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.badge {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: #fff1df;
+  color: #c2410c;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.course-desc {
+  margin-top: 16rpx;
+  color: #6b7280;
+  font-size: 27rpx;
+  line-height: 1.55;
+}
+
+.course-bottom {
+  margin-top: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price {
+  font-size: 38rpx;
+}
+
+.link {
+  color: #374151;
+  font-size: 26rpx;
+  font-weight: 700;
+}

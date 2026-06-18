@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
 import { toStableUuid } from "@/lib/stable-id";
+import { miniProgramUserFromToken } from "@/lib/miniprogram-auth";
 
 export async function getPayUser(req: Request) {
   const supabase = await createClient();
@@ -32,6 +33,11 @@ export async function getPayUser(req: Request) {
 
   if (!token) {
     return { supabase, user: null };
+  }
+
+  const miniUser = miniProgramUserFromToken(token);
+  if (miniUser) {
+    return { supabase, user: miniUser };
   }
 
   const {

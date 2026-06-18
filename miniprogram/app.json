@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/courses/index",
+    "pages/lesson/index",
+    "pages/player/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "字书 Zishoo",
+    "navigationBarBackgroundColor": "#fff8f0",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8f5f0"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

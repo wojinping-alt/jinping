@@ -1,0 +1,40 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state card">加载中...</view>
+  <view wx:elif="{{error}}" class="state card error">{{error}}</view>
+
+  <block wx:else>
+    <view class="hero card">
+      <view class="meta">{{episodes.length}}集课程</view>
+      <view class="title">{{course.title}}</view>
+      <view class="desc">{{course.description}}</view>
+      <view class="buy-row">
+        <view class="price">￥{{course.priceText}}</view>
+        <button
+          wx:if="{{!unlocked}}"
+          class="button button-primary buy-button"
+          loading="{{paying}}"
+          bindtap="buyCourse"
+        >
+          购买合集
+        </button>
+        <view wx:else class="unlocked">已解锁</view>
+      </view>
+    </view>
+
+    <view class="section-title">课程目录</view>
+    <view class="episode-list card">
+      <view
+        wx:for="{{episodes}}"
+        wx:key="id"
+        class="episode"
+        bindtap="openEpisode"
+        data-id="{{item.id}}"
+        data-title="{{item.title}}"
+      >
+        <view class="episode-no">{{item.episode_number}}</view>
+        <view class="episode-title">{{item.title}}</view>
+        <view class="episode-action">{{unlocked ? "播放" : "锁定"}}</view>
+      </view>
+    </view>
+  </block>
+</view>

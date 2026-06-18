@@ -10,6 +10,7 @@ type WechatOrderInput = {
   amountFen: number;
   notifyUrl: string;
   mode: WechatPayMode;
+  appid?: string;
   payerOpenid?: string;
   clientIp?: string;
   userAgent?: string;
@@ -125,7 +126,7 @@ export async function createWechatPayOrder(input: WechatOrderInput) {
         : "/v3/pay/transactions/jsapi";
 
   const body: Record<string, unknown> = {
-    appid: config.appid,
+    appid: input.appid || config.appid,
     mchid: config.mchid,
     description: input.description,
     out_trade_no: input.outTradeNo,
@@ -180,19 +181,20 @@ export async function createWechatPayOrder(input: WechatOrderInput) {
   };
 }
 
-export function createJsapiPayParams(prepayId: string) {
+export function createJsapiPayParams(prepayId: string, appidOverride?: string) {
   const config = getWechatConfig();
+  const appid = appidOverride || config.appid;
   const timeStamp = Math.floor(Date.now() / 1000).toString();
   const nonceStr = crypto.randomBytes(16).toString("hex");
   const packageValue = `prepay_id=${prepayId}`;
-  const message = `${config.appid}\n${timeStamp}\n${nonceStr}\n${packageValue}\n`;
+  const message = `${appid}\n${timeStamp}\n${nonceStr}\n${packageValue}\n`;
   const paySign = crypto
     .createSign("RSA-SHA256")
     .update(message)
     .sign(config.privateKey, "base64");
 
   return {
-    appId: config.appid,
+    appId: appid,
     timeStamp,
     nonceStr,
     package: packageValue,

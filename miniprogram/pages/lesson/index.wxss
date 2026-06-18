@@ -1,0 +1,104 @@
+.state {
+  padding: 40rpx;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.hero {
+  padding: 34rpx;
+}
+
+.meta {
+  color: #c2410c;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.title {
+  margin-top: 12rpx;
+  font-size: 42rpx;
+  font-weight: 900;
+  line-height: 1.32;
+}
+
+.desc {
+  margin-top: 18rpx;
+  color: #6b7280;
+  font-size: 28rpx;
+  line-height: 1.55;
+}
+
+.buy-row {
+  margin-top: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.price {
+  font-size: 42rpx;
+}
+
+.buy-button {
+  width: 240rpx;
+  margin: 0;
+}
+
+.unlocked {
+  padding: 18rpx 28rpx;
+  border-radius: 12rpx;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 800;
+}
+
+.section-title {
+  margin: 34rpx 0 18rpx;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.episode-list {
+  overflow: hidden;
+}
+
+.episode {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 0 28rpx;
+  border-bottom: 1rpx solid #f0e8df;
+}
+
+.episode:last-child {
+  border-bottom: 0;
+}
+
+.episode-no {
+  width: 58rpx;
+  height: 58rpx;
+  border-radius: 50%;
+  background: #fff1df;
+  color: #c2410c;
+  text-align: center;
+  line-height: 58rpx;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.episode-title {
+  flex: 1;
+  margin-left: 22rpx;
+  font-size: 29rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.episode-action {
+  color: #6b7280;
+  font-size: 25rpx;
+}

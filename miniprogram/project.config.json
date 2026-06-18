@@ -1,0 +1,14 @@
+{
+  "description": "Zishoo course mini program experience version",
+  "appid": "wxef4519eed9e2e685",
+  "projectname": "zishoo-mini",
+  "miniprogramRoot": "./",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram"
+}
