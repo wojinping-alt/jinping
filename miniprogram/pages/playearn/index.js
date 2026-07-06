@@ -16,10 +16,6 @@ Page({
     ]
   },
 
-  contactService() {
-    wx.showToast({ title: "请联系客服确认定制需求", icon: "none" });
-  },
-
   openSku() {
     this.setData({ showSku: true });
   },

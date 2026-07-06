@@ -345,6 +345,26 @@
   display: block;
 }
 
+.service-button {
+  position: fixed;
+  right: 20rpx;
+  bottom: 204rpx;
+  z-index: 20;
+  width: 136rpx;
+  height: 132rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  line-height: normal;
+}
+
+.service-button::after {
+  border: 0;
+}
+
 .service-bubble {
   position: fixed;
   right: 48rpx;

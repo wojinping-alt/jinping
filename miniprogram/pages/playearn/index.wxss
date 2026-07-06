@@ -280,6 +280,26 @@
   display: block;
 }
 
+.service-button {
+  position: fixed;
+  right: 20rpx;
+  bottom: 148rpx;
+  z-index: 20;
+  width: 136rpx;
+  height: 132rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  line-height: normal;
+}
+
+.service-button::after {
+  border: 0;
+}
+
 .service-bubble {
   position: fixed;
   right: 48rpx;
@@ -343,10 +363,22 @@
 
 .bar-item {
   width: 112rpx;
+  height: 88rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   color: #555555;
+  line-height: normal;
+}
+
+.bar-item::after {
+  border: 0;
 }
 
 .bar-icon {

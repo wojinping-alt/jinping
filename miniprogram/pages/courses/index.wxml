@@ -100,8 +100,10 @@
     </view>
   </block>
 
-  <view class="service-bubble"></view>
-  <view class="service-text">在线客服</view>
+  <button class="service-button" open-type="contact">
+    <view class="service-bubble"></view>
+    <view class="service-text">在线客服</view>
+  </button>
 
   <view class="bottom-tabs">
     <view class="tab active" bindtap="switchTab" data-tab="home">

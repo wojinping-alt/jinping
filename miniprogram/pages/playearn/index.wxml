@@ -53,14 +53,16 @@
     ></image>
   </view>
 
-  <view class="service-bubble" bindtap="contactService"></view>
-  <view class="service-text">在线客服</view>
+  <button class="service-button" open-type="contact">
+    <view class="service-bubble"></view>
+    <view class="service-text">在线客服</view>
+  </button>
 
   <view class="bottom-bar">
-    <view class="bar-item" bindtap="contactService">
+    <button class="bar-item" open-type="contact">
       <view class="bar-icon service-icon"></view>
       <view class="bar-text">客服</view>
-    </view>
+    </button>
     <button class="buy-button" bindtap="buyProduct">立即购买</button>
   </view>
 
