@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPayUser } from "@/lib/pay-auth";
 import { verifyMiniProgramSession } from "@/lib/miniprogram-auth";
+import { createAdminClient } from "@/lib/supabase-admin";
 import {
   buildNotifyUrl,
   createJsapiPayParams,
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "请先登录小程序" }, { status: 401 });
     }
 
-    const { supabase, user } = await getPayUser(req);
+    const { user } = await getPayUser(req);
     if (!user) {
       return NextResponse.json({ error: "请先登录小程序" }, { status: 401 });
     }
@@ -55,6 +56,7 @@ export async function POST(req: Request) {
       .slice(2, 8)
       .toUpperCase()}`;
     const miniAppId = process.env.WECHAT_MINI_APP_ID || process.env.WECHAT_PAY_APPID;
+    const supabase = createAdminClient();
 
     const { data: order, error: orderError } = await supabase
       .from("product_orders")
