@@ -427,3 +427,63 @@
   font-size: 28rpx;
   font-weight: 600;
 }
+
+.follow-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+}
+
+.follow-modal {
+  position: relative;
+  width: 100%;
+  max-width: 620rpx;
+  padding: 46rpx 34rpx 38rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.follow-close {
+  position: absolute;
+  right: 24rpx;
+  top: 12rpx;
+  color: #aaaaaa;
+  font-size: 58rpx;
+  line-height: 1;
+}
+
+.follow-title {
+  color: #222222;
+  font-size: 38rpx;
+  font-weight: 900;
+}
+
+.follow-subtitle {
+  margin-top: 14rpx;
+  color: #777777;
+  font-size: 27rpx;
+  line-height: 1.45;
+}
+
+.follow-qr {
+  width: 430rpx;
+  height: 430rpx;
+  margin-top: 28rpx;
+}
+
+.follow-tip {
+  margin-top: 18rpx;
+  color: #999999;
+  font-size: 24rpx;
+}

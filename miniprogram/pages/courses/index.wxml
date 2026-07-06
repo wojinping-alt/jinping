@@ -55,7 +55,7 @@
         <view class="shop-name">字书</view>
         <view class="shop-desc">明字善书</view>
       </view>
-      <view class="follow-btn">立即关注</view>
+      <view class="follow-btn" bindtap="openFollowQr">立即关注</view>
     </view>
 
     <view class="section">
@@ -121,6 +121,22 @@
     <view class="tab" bindtap="switchTab" data-tab="mine">
       <view class="tab-icon mine-icon"></view>
       <view class="tab-text">我的</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showFollowQr}}" class="follow-mask" bindtap="closeFollowQr">
+    <view class="follow-modal" catchtap="stopBubble">
+      <view class="follow-close" bindtap="closeFollowQr">×</view>
+      <view class="follow-title">关注字书客服</view>
+      <view class="follow-subtitle">长按识别二维码，添加官方客服微信</view>
+      <image
+        class="follow-qr"
+        src="/assets/xet/follow-qr.jpg"
+        mode="aspectFit"
+        bindtap="previewFollowQr"
+        show-menu-by-longpress="true"
+      ></image>
+      <view class="follow-tip">点击二维码可放大查看</view>
     </view>
   </view>
 </view>

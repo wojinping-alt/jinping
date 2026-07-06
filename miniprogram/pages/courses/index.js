@@ -33,7 +33,8 @@ Page({
     totalEpisodes: 0,
     menuItems,
     adItems,
-    activeTab: "home"
+    activeTab: "home",
+    showFollowQr: false
   },
 
   onShow() {
@@ -107,5 +108,22 @@ Page({
 
   tapSearch() {
     wx.showToast({ title: "搜索功能正在完善", icon: "none" });
+  },
+
+  openFollowQr() {
+    this.setData({ showFollowQr: true });
+  },
+
+  closeFollowQr() {
+    this.setData({ showFollowQr: false });
+  },
+
+  stopBubble() {},
+
+  previewFollowQr() {
+    wx.previewImage({
+      urls: ["/assets/xet/follow-qr.jpg"],
+      current: "/assets/xet/follow-qr.jpg"
+    });
   }
 });
