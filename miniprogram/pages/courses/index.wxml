@@ -4,13 +4,20 @@
     <view class="search-text">搜索</view>
   </view>
 
-  <view class="banner">
-    <image class="banner-image" src="/assets/xet/banner.jpg" mode="aspectFill"></image>
-    <view class="dots">
-      <view class="dot muted-dot"></view>
-      <view class="dot"></view>
-    </view>
-  </view>
+  <swiper
+    class="banner-swiper"
+    indicator-dots="{{true}}"
+    indicator-color="rgba(255,255,255,0.35)"
+    indicator-active-color="#ffffff"
+    autoplay="{{true}}"
+    circular="{{true}}"
+    interval="3500"
+    duration="450"
+  >
+    <swiper-item wx:for="{{bannerItems}}" wx:key="image">
+      <image class="banner-image" src="{{item.image}}" mode="aspectFill" bindtap="tapBanner"></image>
+    </swiper-item>
+  </swiper>
 
   <view class="menu-grid">
     <view

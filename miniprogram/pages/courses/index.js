@@ -1,5 +1,10 @@
 const { request } = require("../../utils/request");
 
+const bannerItems = [
+  { image: "/assets/xet/banner-1.jpg" },
+  { image: "/assets/xet/banner-2.jpg" }
+];
+
 const menuItems = [
   { label: "推广", icon: "/assets/xet/menu-promo.png", target: "promo" },
   { label: "打卡", icon: "/assets/xet/menu-checkin.png", target: "checkin" },
@@ -31,6 +36,7 @@ Page({
     simpleCourse: null,
     featuredCourse: null,
     totalEpisodes: 0,
+    bannerItems,
     menuItems,
     adItems,
     activeTab: "home",
@@ -74,6 +80,14 @@ Page({
         loading: false
       });
     }
+  },
+
+  tapBanner() {
+    const course = this.data.featuredCourse;
+    if (!course || !course.id) return;
+    wx.navigateTo({
+      url: `/pages/lesson/index?id=${course.id}`
+    });
   },
 
   openCourse(event) {
