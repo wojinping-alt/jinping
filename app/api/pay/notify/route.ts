@@ -19,6 +19,35 @@ export async function POST(req: Request) {
     }
 
     const supabase = createAdminClient();
+
+    if (outTradeNo.startsWith("MPG")) {
+      const { data: productOrder, error: productOrderError } = await supabase
+        .from("product_orders")
+        .select("id,status")
+        .eq("out_trade_no", outTradeNo)
+        .maybeSingle();
+
+      if (productOrderError) throw productOrderError;
+      if (!productOrder) {
+        return NextResponse.json({ code: "SUCCESS", message: "product order not found" });
+      }
+
+      if (productOrder.status !== "paid") {
+        const { error: updateProductError } = await supabase
+          .from("product_orders")
+          .update({
+            status: "paid",
+            paid_at: new Date().toISOString(),
+            transaction_id: transaction.transaction_id,
+          })
+          .eq("id", productOrder.id);
+
+        if (updateProductError) throw updateProductError;
+      }
+
+      return NextResponse.json({ code: "SUCCESS", message: "success" });
+    }
+
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .select("id,user_id,course_id,status")
@@ -64,4 +93,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

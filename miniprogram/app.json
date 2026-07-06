@@ -2,13 +2,14 @@
   "pages": [
     "pages/courses/index",
     "pages/lesson/index",
-    "pages/player/index"
+    "pages/player/index",
+    "pages/playearn/index"
   ],
   "window": {
-    "navigationBarTitleText": "字书 Zishoo",
-    "navigationBarBackgroundColor": "#fff8f0",
+    "navigationBarTitleText": "字书",
+    "navigationBarBackgroundColor": "#f7f7f7",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f8f5f0"
+    "backgroundColor": "#f7f7f7"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

@@ -1,30 +1,124 @@
-<view class="page">
-  <view class="header">
-    <view class="brand">字书 Zishoo</view>
-    <view class="title">课程合集</view>
-    <view class="subtitle">购买后即可解锁对应目录视频。</view>
+<view class="xet-page">
+  <view class="search-bar" bindtap="tapSearch">
+    <view class="search-icon"></view>
+    <view class="search-text">搜索</view>
   </view>
 
-  <view wx:if="{{loading}}" class="state card">加载中...</view>
+  <view class="banner">
+    <image class="banner-image" src="/assets/xet/banner.jpg" mode="aspectFill"></image>
+    <view class="dots">
+      <view class="dot muted-dot"></view>
+      <view class="dot"></view>
+    </view>
+  </view>
+
+  <view class="menu-grid">
+    <view
+      wx:for="{{menuItems}}"
+      wx:key="label"
+      class="menu-item"
+      bindtap="tapMenu"
+      data-target="{{item.target}}"
+    >
+      <image class="menu-icon-img" src="{{item.icon}}" mode="aspectFit"></image>
+      <view class="menu-label">{{item.label}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state card">课程加载中...</view>
   <view wx:elif="{{error}}" class="state card error">{{error}}</view>
 
-  <view wx:else class="course-list">
-    <view
-      wx:for="{{courses}}"
-      wx:key="id"
-      class="course card"
-      bindtap="openCourse"
-      data-id="{{item.id}}"
-    >
-      <view class="course-top">
-        <view class="course-title">{{item.title}}</view>
-        <view class="badge">{{item.episodeCount}}集</view>
+  <block wx:else>
+    <view wx:if="{{featuredCourse}}" class="video-ad-wrap">
+      <scroll-view class="video-ad-scroll" scroll-x="true" show-scrollbar="false" enhanced="true">
+        <view class="video-ad-track">
+          <view
+            wx:for="{{adItems}}"
+            wx:key="title"
+            class="video-ad-card"
+            bindtap="openCourse"
+            data-id="{{featuredCourse.id}}"
+          >
+            <image class="video-ad-image" src="{{item.image}}" mode="aspectFill"></image>
+            <view class="video-ad-mask"></view>
+            <view class="trial-play"><view class="play-triangle"></view></view>
+            <view class="trial-title">{{item.title}}</view>
+            <view class="trial-dots">••••</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="shop-card">
+      <view class="shop-logo">字</view>
+      <view class="shop-info">
+        <view class="shop-name">字书</view>
+        <view class="shop-desc">明字善书</view>
       </view>
-      <view class="course-desc">{{item.description}}</view>
-      <view class="course-bottom">
-        <view class="price">￥{{item.priceText}}</view>
-        <view class="link">查看目录</view>
+      <view class="follow-btn">立即关注</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">课程</view>
+      <view
+        wx:for="{{qCourses}}"
+        wx:key="id"
+        class="xet-course"
+        bindtap="openCourse"
+        data-id="{{item.id}}"
+      >
+        <image class="course-cover-image" src="{{item.coverImage}}" mode="aspectFill"></image>
+        <view class="course-body">
+          <view class="course-title">{{item.title}}</view>
+          <view class="course-desc">文字的 文化的 艺术的 一课三得</view>
+          <view class="course-meta">
+            <view class="course-price">¥ {{item.priceText}}</view>
+            <view class="course-count">{{item.episodeCount}} 人订阅</view>
+          </view>
+        </view>
       </view>
+    </view>
+
+    <view class="section goods-section" wx:if="{{simpleCourse}}">
+      <view class="section-title">货品</view>
+      <view class="goods-card" bindtap="openCourse" data-id="{{simpleCourse.id}}">
+        <image class="goods-poster" src="/assets/xet/goods-pack.jpg" mode="aspectFill"></image>
+        <view class="goods-info">
+          <view class="goods-title">{{simpleCourse.title}}</view>
+          <view class="goods-desc">按集购买或购买合集后观看全部内容。</view>
+          <view class="course-meta">
+            <view class="course-price">¥ {{simpleCourse.priceText}}</view>
+            <view class="course-count">{{simpleCourse.episodeCount}} 集</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section play-section">
+      <view class="section-title">玩赚</view>
+      <image class="play-poster" src="/assets/xet/playearn-product.jpg" mode="widthFix" bindtap="openPlayEarn"></image>
+    </view>
+  </block>
+
+  <view class="service-bubble"></view>
+  <view class="service-text">在线客服</view>
+
+  <view class="bottom-tabs">
+    <view class="tab active" bindtap="switchTab" data-tab="home">
+      <view class="tab-icon home-icon"></view>
+      <view class="tab-text">首页</view>
+    </view>
+    <view class="tab" bindtap="switchTab" data-tab="owned">
+      <view class="tab-icon list-icon"></view>
+      <view class="tab-text">已购课程</view>
+    </view>
+    <view class="tab" bindtap="switchTab" data-tab="promo">
+      <view class="tab-icon shop-icon"></view>
+      <view class="tab-text">我的推广</view>
+    </view>
+    <view class="tab" bindtap="switchTab" data-tab="mine">
+      <view class="tab-icon mine-icon"></view>
+      <view class="tab-text">我的</view>
     </view>
   </view>
 </view>

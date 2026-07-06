@@ -1,28 +1,33 @@
-<view class="page">
+<view class="lesson-page">
   <view wx:if="{{loading}}" class="state card">加载中...</view>
   <view wx:elif="{{error}}" class="state card error">{{error}}</view>
 
   <block wx:else>
-    <view class="hero card">
-      <view class="meta">{{episodes.length}}集课程</view>
+    <image class="detail-cover" src="{{course.coverImage}}" mode="aspectFill"></image>
+
+    <view class="detail-main">
+      <view class="course-status">{{episodes.length}}集课程</view>
       <view class="title">{{course.title}}</view>
       <view class="desc">{{course.description}}</view>
-      <view class="buy-row">
-        <view class="price">￥{{course.priceText}}</view>
-        <button
-          wx:if="{{!unlocked}}"
-          class="button button-primary buy-button"
-          loading="{{paying}}"
-          bindtap="buyCourse"
-        >
-          购买合集
-        </button>
-        <view wx:else class="unlocked">已解锁</view>
+      <view class="meta-line">
+        <text>{{unlocked ? "已购" : "购买后解锁"}}</text>
+        <text>{{episodes.length}} 人订阅</text>
       </view>
     </view>
 
-    <view class="section-title">课程目录</view>
-    <view class="episode-list card">
+    <view class="tab-row">
+      <view class="detail-tab active">详情</view>
+      <view class="detail-tab">目录</view>
+    </view>
+
+    <view class="intro-card">
+      <view class="intro-title">课程介绍</view>
+      <view class="intro-text">{{course.description}}</view>
+      <image wx:if="{{course.coverImage}}" class="intro-image" src="{{course.coverImage}}" mode="widthFix"></image>
+    </view>
+
+    <view class="catalog-title">课程目录</view>
+    <view class="episode-list">
       <view
         wx:for="{{episodes}}"
         wx:key="id"
@@ -33,8 +38,24 @@
       >
         <view class="episode-no">{{item.episode_number}}</view>
         <view class="episode-title">{{item.title}}</view>
-        <view class="episode-action">{{unlocked ? "播放" : "锁定"}}</view>
+        <view class="episode-action {{unlocked ? 'playable' : ''}}">{{unlocked ? "播放" : "锁定"}}</view>
       </view>
+    </view>
+
+    <view class="buy-bar">
+      <view class="buy-price">
+        <view class="price">¥ {{course.priceText}}</view>
+        <view class="price-note">{{unlocked ? "已解锁，可观看全部内容" : "一次购买，观看本合集全部课程"}}</view>
+      </view>
+      <button
+        wx:if="{{!unlocked}}"
+        class="buy-button"
+        loading="{{paying}}"
+        bindtap="buyCourse"
+      >
+        购买合集
+      </button>
+      <view wx:else class="unlocked">已购买</view>
     </view>
   </block>
 </view>

@@ -1,5 +1,11 @@
 const { request, ensureLogin } = require("../../utils/request");
 
+function getCoverImage(title) {
+  if (title.includes("Q2") || title.includes("第2季")) return "/assets/xet/q2-cover.jpg";
+  if (title.includes("Q1") || title.includes("第1季")) return "/assets/xet/q1-cover.jpg";
+  return "/assets/xet/goods-pack.jpg";
+}
+
 Page({
   data: {
     courseId: "",
@@ -28,10 +34,12 @@ Page({
       const data = await request({
         url: `/api/miniprogram/lesson?courseId=${this.data.courseId}`
       });
+      const course = data.course || {};
       this.setData({
         course: {
-          ...data.course,
-          priceText: Number(data.course.price).toFixed(2)
+          ...course,
+          priceText: Number(course.price || 0).toFixed(2),
+          coverImage: getCoverImage(course.title || "")
         },
         episodes: data.episodes || [],
         unlocked: Boolean(data.unlocked),
@@ -58,6 +66,7 @@ Page({
 
       if (data.paid) {
         await this.loadLesson();
+        this.setData({ paying: false });
         return;
       }
 

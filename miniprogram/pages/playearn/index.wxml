@@ -1,0 +1,104 @@
+<view class="playearn-page">
+  <view class="shop-top">
+    <view class="shop-left">
+      <image class="shop-logo-img" src="/assets/xet/menu-goods.png" mode="aspectFit"></image>
+      <view class="shop-name">字书</view>
+    </view>
+    <view class="shop-actions">
+      <view class="shop-action search-action"></view>
+      <view class="shop-action share-action"></view>
+      <view class="shop-action user-action"></view>
+      <view class="shop-dot">•••</view>
+    </view>
+  </view>
+
+  <view class="hero-wrap">
+    <image class="product-hero" src="/assets/xet/playearn-product.jpg" mode="widthFix"></image>
+    <view class="goods-tag">服务类商品</view>
+  </view>
+
+  <view class="product-info">
+    <view class="price-row">
+      <view class="price">¥ 1000</view>
+      <view class="sold">已售0 | 库存6000</view>
+    </view>
+    <view class="product-title">图形纹样创意应用</view>
+  </view>
+
+  <view class="sku-row" bindtap="openSku">
+    <view class="sku-label">选择 <text>类型</text></view>
+    <view class="sku-value">{{selectedType || "共6种类型可选"}} ></view>
+  </view>
+
+  <view class="shop-entry">
+    <view class="shop-left">
+      <image class="shop-logo-img" src="/assets/xet/menu-goods.png" mode="aspectFit"></image>
+      <view class="shop-name">字书</view>
+    </view>
+    <view class="visit-btn">进店看看</view>
+  </view>
+
+  <view class="tab-row">
+    <view class="tab active">详情</view>
+  </view>
+
+  <view class="detail-images">
+    <image
+      wx:for="{{detailImages}}"
+      wx:key="*this"
+      class="detail-image"
+      src="{{item}}"
+      mode="widthFix"
+      lazy-load="true"
+    ></image>
+  </view>
+
+  <view class="service-bubble" bindtap="contactService"></view>
+  <view class="service-text">在线客服</view>
+
+  <view class="bottom-bar">
+    <view class="bar-item" bindtap="contactService">
+      <view class="bar-icon service-icon"></view>
+      <view class="bar-text">客服</view>
+    </view>
+    <button class="buy-button" bindtap="buyProduct">立即购买</button>
+  </view>
+
+  <view wx:if="{{showSku}}" class="sku-mask" bindtap="closeSku">
+    <view class="sku-panel" catchtap="stopBubble">
+      <view class="sku-head">
+        <image class="sku-thumb" src="/assets/xet/playearn-product.jpg" mode="aspectFill"></image>
+        <view class="sku-summary">
+          <view class="sku-price">¥ 1000 <text>起</text></view>
+          <view class="sku-stock">剩余 6000件</view>
+          <view class="sku-chosen">{{selectedType ? "已选择 " + selectedType : "请选择 类型"}}</view>
+        </view>
+        <view class="sku-close" bindtap="closeSku">×</view>
+      </view>
+
+      <view class="sku-divider"></view>
+
+      <view class="sku-title">类型</view>
+      <view class="type-list">
+        <view
+          wx:for="{{types}}"
+          wx:key="*this"
+          class="type-pill {{selectedType === item ? 'selected' : ''}}"
+          data-type="{{item}}"
+          bindtap="selectType"
+        >{{item}}</view>
+      </view>
+
+      <view class="quantity-row">
+        <view class="quantity-title">购买数量</view>
+        <view class="stepper">
+          <view class="step-btn muted" bindtap="decreaseQuantity">−</view>
+          <view class="step-value">{{quantity}}</view>
+          <view class="step-btn" bindtap="increaseQuantity">+</view>
+        </view>
+      </view>
+
+      <button class="confirm-button" loading="{{paying}}" bindtap="confirmSku">确定</button>
+    </view>
+  </view>
+</view>
