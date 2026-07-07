@@ -15,10 +15,26 @@ const menuItems = [
 ];
 
 const adItems = [
-  { title: "第1集试看片段", image: "/assets/xet/ad-preview-1.jpg", videoUrl: "" },
-  { title: "甲骨文 hip-hop", image: "/assets/xet/ad-preview-2.jpg", videoUrl: "" },
-  { title: "一字千金产品发布", image: "/assets/xet/ad-preview-3.jpg", videoUrl: "" },
-  { title: "甲骨文表情包", image: "/assets/xet/ad-preview-4.jpg", videoUrl: "" }
+  {
+    title: "第1集试看片段",
+    image: "/assets/xet/ad-preview-1.jpg",
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/e182b9f65001834810536510348/RYihjanTOmUA.mp4"
+  },
+  {
+    title: "甲骨文 hip-hop",
+    image: "/assets/xet/ad-preview-2.jpg",
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/7248fc155001834810538134550/xGGXOP2AhdQA.mp4"
+  },
+  {
+    title: "一字千金产品发布",
+    image: "/assets/xet/ad-preview-3.jpg",
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/c2b0fca75001834807096831388/m0qAvMvB9xUA.mp4"
+  },
+  {
+    title: "甲骨文表情包",
+    image: "/assets/xet/ad-preview-4.jpg",
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/e6b026a75001834810536788654/LsGSKdMq4u8A.mp4"
+  }
 ];
 
 function getCoverImage(title) {
