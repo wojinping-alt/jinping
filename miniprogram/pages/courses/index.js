@@ -15,10 +15,10 @@ const menuItems = [
 ];
 
 const adItems = [
-  { title: "第1集试看片段", image: "/assets/xet/ad-preview-1.jpg" },
-  { title: "甲骨文 hip-hop", image: "/assets/xet/ad-preview-2.jpg" },
-  { title: "一字千金产品发布", image: "/assets/xet/ad-preview-3.jpg" },
-  { title: "甲骨文表情包", image: "/assets/xet/ad-preview-4.jpg" }
+  { title: "第1集试看片段", image: "/assets/xet/ad-preview-1.jpg", videoUrl: "" },
+  { title: "甲骨文 hip-hop", image: "/assets/xet/ad-preview-2.jpg", videoUrl: "" },
+  { title: "一字千金产品发布", image: "/assets/xet/ad-preview-3.jpg", videoUrl: "" },
+  { title: "甲骨文表情包", image: "/assets/xet/ad-preview-4.jpg", videoUrl: "" }
 ];
 
 function getCoverImage(title) {
@@ -40,7 +40,9 @@ Page({
     menuItems,
     adItems,
     activeTab: "home",
-    showFollowQr: false
+    showFollowQr: false,
+    showVideoAd: false,
+    activeAd: null
   },
 
   onShow() {
@@ -95,6 +97,26 @@ Page({
     if (!id) return;
     wx.navigateTo({
       url: `/pages/lesson/index?id=${id}`
+    });
+  },
+
+  playVideoAd(event) {
+    const index = Number(event.currentTarget.dataset.index || 0);
+    const activeAd = this.data.adItems[index];
+    if (!activeAd?.videoUrl) {
+      wx.showToast({ title: "视频上传后可播放", icon: "none" });
+      return;
+    }
+    this.setData({
+      activeAd,
+      showVideoAd: true
+    });
+  },
+
+  closeVideoAd() {
+    this.setData({
+      showVideoAd: false,
+      activeAd: null
     });
   },
 

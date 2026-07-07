@@ -43,8 +43,8 @@
             wx:for="{{adItems}}"
             wx:key="title"
             class="video-ad-card"
-            bindtap="openCourse"
-            data-id="{{featuredCourse.id}}"
+            bindtap="playVideoAd"
+            data-index="{{index}}"
           >
             <image class="video-ad-image" src="{{item.image}}" mode="aspectFill"></image>
             <view class="video-ad-mask"></view>
@@ -128,6 +128,23 @@
     <view class="tab" bindtap="switchTab" data-tab="mine">
       <view class="tab-icon mine-icon"></view>
       <view class="tab-text">我的</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showVideoAd}}" class="video-modal-mask" bindtap="closeVideoAd">
+    <view class="video-modal" catchtap="stopBubble">
+      <view class="video-modal-head">
+        <view class="video-modal-title">{{activeAd.title}}</view>
+        <view class="video-modal-close" bindtap="closeVideoAd">×</view>
+      </view>
+      <video
+        class="video-modal-player"
+        src="{{activeAd.videoUrl}}"
+        poster="{{activeAd.image}}"
+        autoplay="{{true}}"
+        controls="{{true}}"
+        show-center-play-btn="{{true}}"
+      ></video>
     </view>
   </view>
 

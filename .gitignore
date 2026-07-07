@@ -38,6 +38,7 @@ vod-upload-results.json
 vod-ai-upload-results.json
 vod-hls-*.json
 vod-replace-course-state.json
+xet-video-ad-upload-results.json
 
 # vercel
 .vercel
