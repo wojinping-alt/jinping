@@ -61,7 +61,19 @@ Page({
   },
 
   onShow() {
+    this.loadVideoAds();
     this.loadCourses();
+  },
+
+  async loadVideoAds() {
+    try {
+      const data = await request({ url: "/api/miniprogram/video-ads" });
+      if (Array.isArray(data.ads) && data.ads.length) {
+        this.setData({ adItems: data.ads });
+      }
+    } catch (error) {
+      console.warn("load video ads failed", error);
+    }
   },
 
   async loadCourses() {
@@ -118,6 +130,14 @@ Page({
   onAdSwiperChange(event) {
     this.setData({
       activeAdIndex: event.detail.current || 0
+    });
+  },
+
+  onVideoAdError(error) {
+    console.error("video ad error", error);
+    wx.showToast({
+      title: "视频域名未配置或地址不可用",
+      icon: "none"
     });
   },
 

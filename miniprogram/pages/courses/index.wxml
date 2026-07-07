@@ -60,6 +60,7 @@
               enable-progress-gesture="{{true}}"
               show-fullscreen-btn="{{true}}"
               show-play-btn="{{true}}"
+              binderror="onVideoAdError"
             ></video>
             <view class="trial-title">{{item.title}}</view>
           </view>
