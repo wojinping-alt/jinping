@@ -37,23 +37,34 @@
 
   <block wx:else>
     <view wx:if="{{featuredCourse}}" class="video-ad-wrap">
-      <scroll-view class="video-ad-scroll" scroll-x="true" show-scrollbar="false" enhanced="true">
-        <view class="video-ad-track">
-          <view
-            wx:for="{{adItems}}"
-            wx:key="title"
-            class="video-ad-card"
-            bindtap="playVideoAd"
-            data-index="{{index}}"
-          >
-            <image class="video-ad-image" src="{{item.image}}" mode="aspectFill"></image>
-            <view class="video-ad-mask"></view>
-            <view class="trial-play"><view class="play-triangle"></view></view>
+      <swiper
+        class="video-ad-swiper"
+        current="{{activeAdIndex}}"
+        circular="{{true}}"
+        indicator-dots="{{true}}"
+        indicator-color="rgba(255,255,255,0.35)"
+        indicator-active-color="#ffffff"
+        bindchange="onAdSwiperChange"
+      >
+        <swiper-item wx:for="{{adItems}}" wx:key="title">
+          <view class="video-ad-card">
+            <video
+              class="video-ad-player"
+              src="{{item.videoUrl}}"
+              poster="{{item.image}}"
+              controls="{{true}}"
+              autoplay="{{false}}"
+              loop="{{false}}"
+              object-fit="cover"
+              show-center-play-btn="{{true}}"
+              enable-progress-gesture="{{true}}"
+              show-fullscreen-btn="{{true}}"
+              show-play-btn="{{true}}"
+            ></video>
             <view class="trial-title">{{item.title}}</view>
-            <view class="trial-dots">••••</view>
           </view>
-        </view>
-      </scroll-view>
+        </swiper-item>
+      </swiper>
     </view>
 
     <view class="shop-card">
@@ -128,23 +139,6 @@
     <view class="tab" bindtap="switchTab" data-tab="mine">
       <view class="tab-icon mine-icon"></view>
       <view class="tab-text">我的</view>
-    </view>
-  </view>
-
-  <view wx:if="{{showVideoAd}}" class="video-modal-mask" bindtap="closeVideoAd">
-    <view class="video-modal" catchtap="stopBubble">
-      <view class="video-modal-head">
-        <view class="video-modal-title">{{activeAd.title}}</view>
-        <view class="video-modal-close" bindtap="closeVideoAd">×</view>
-      </view>
-      <video
-        class="video-modal-player"
-        src="{{activeAd.videoUrl}}"
-        poster="{{activeAd.image}}"
-        autoplay="{{true}}"
-        controls="{{true}}"
-        show-center-play-btn="{{true}}"
-      ></video>
     </view>
   </view>
 

@@ -18,22 +18,22 @@ const adItems = [
   {
     title: "第1集试看片段",
     image: "/assets/xet/ad-preview-1.jpg",
-    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/e182b9f65001834810536510348/RYihjanTOmUA.mp4"
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/b2b9231c5001834810549461327/eHCtW3VEuXAA.mp4"
   },
   {
     title: "甲骨文 hip-hop",
     image: "/assets/xet/ad-preview-2.jpg",
-    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/7248fc155001834810538134550/xGGXOP2AhdQA.mp4"
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/e06e30f25001834810550002478/py9ExAvNAKQA.mp4"
   },
   {
     title: "一字千金产品发布",
     image: "/assets/xet/ad-preview-3.jpg",
-    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/c2b0fca75001834807096831388/m0qAvMvB9xUA.mp4"
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/a15c4b245001834807112855867/ptBU5K5YUyMA.mp4"
   },
   {
     title: "甲骨文表情包",
     image: "/assets/xet/ad-preview-4.jpg",
-    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/e6b026a75001834810536788654/LsGSKdMq4u8A.mp4"
+    videoUrl: "https://1309315684.vod-qcloud.com/3f7f1c6avodcq1309315684/165cedc05001834810547350777/EE9oEhEg8oAA.mp4"
   }
 ];
 
@@ -57,8 +57,7 @@ Page({
     adItems,
     activeTab: "home",
     showFollowQr: false,
-    showVideoAd: false,
-    activeAd: null
+    activeAdIndex: 0
   },
 
   onShow() {
@@ -116,23 +115,9 @@ Page({
     });
   },
 
-  playVideoAd(event) {
-    const index = Number(event.currentTarget.dataset.index || 0);
-    const activeAd = this.data.adItems[index];
-    if (!activeAd?.videoUrl) {
-      wx.showToast({ title: "视频上传后可播放", icon: "none" });
-      return;
-    }
+  onAdSwiperChange(event) {
     this.setData({
-      activeAd,
-      showVideoAd: true
-    });
-  },
-
-  closeVideoAd() {
-    this.setData({
-      showVideoAd: false,
-      activeAd: null
+      activeAdIndex: event.detail.current || 0
     });
   },
 

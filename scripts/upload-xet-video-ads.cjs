@@ -6,30 +6,31 @@ const { VodUploadClient, VodUploadRequest } = require("vod-node-sdk");
 const root = path.resolve(__dirname, "..");
 const envPath = path.join(root, "vod-upload.env.local");
 const resultsPath = path.join(root, "xet-video-ad-upload-results.json");
+const compressedRoot = path.join(root, "tmp", "xet-video-ads-compressed");
 
 const videos = [
   {
     key: "trial",
     title: "第1集试看片段",
-    filePath: "C:\\Users\\Lenovo\\Desktop\\hanzi-project\\小鹅通\\视频广告\\第1集试看片段.mp4",
+    filePath: path.join(compressedRoot, "trial.mp4"),
     poster: "/assets/xet/ad-preview-1.jpg"
   },
   {
     key: "hiphop",
     title: "甲骨文 hip-hop",
-    filePath: "C:\\Users\\Lenovo\\Desktop\\hanzi-project\\小鹅通\\视频广告\\甲骨文hip-hop「海外版」发布.mp4",
+    filePath: path.join(compressedRoot, "hiphop.mp4"),
     poster: "/assets/xet/ad-preview-2.jpg"
   },
   {
     key: "launch",
     title: "一字千金产品发布",
-    filePath: "C:\\Users\\Lenovo\\Desktop\\hanzi-project\\小鹅通\\视频广告\\《一字千金•第1季》产品发布.mp4",
+    filePath: path.join(compressedRoot, "launch.mp4"),
     poster: "/assets/xet/ad-preview-3.jpg"
   },
   {
     key: "emoji",
     title: "甲骨文表情包",
-    filePath: "C:\\Users\\Lenovo\\Desktop\\hanzi-project\\小鹅通\\视频广告\\甲骨文脱口秀表情包产品发布.mp4",
+    filePath: path.join(compressedRoot, "emoji.mp4"),
     poster: "/assets/xet/ad-preview-4.jpg"
   }
 ];
@@ -85,7 +86,7 @@ async function main() {
     }
 
     const existing = uploaded.videos.find((item) => item.key === video.key);
-    if (existing?.fileId && existing?.mediaUrl) {
+    if (existing?.filePath === video.filePath && existing?.fileId && existing?.mediaUrl) {
       console.log(`skip ${video.title}: ${existing.fileId}`);
       continue;
     }

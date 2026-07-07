@@ -98,32 +98,25 @@
 }
 
 .video-ad-wrap {
-  padding: 26rpx 0 0;
+  padding: 26rpx 26rpx 0;
   background: #ffffff;
 }
 
-.video-ad-scroll {
+.video-ad-swiper {
   width: 100%;
-  white-space: nowrap;
-}
-
-.video-ad-track {
-  display: flex;
-  gap: 4rpx;
-  padding: 0 26rpx;
+  height: 430rpx;
 }
 
 .video-ad-card {
   position: relative;
-  flex: 0 0 600rpx;
-  width: 600rpx;
+  width: 100%;
   height: 430rpx;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 14rpx;
   background: #000000;
 }
 
-.video-ad-image {
+.video-ad-player {
   width: 100%;
   height: 100%;
   display: block;
@@ -167,7 +160,7 @@
   position: absolute;
   left: 44rpx;
   right: 34rpx;
-  bottom: 58rpx;
+  bottom: 86rpx;
   z-index: 3;
   color: #ffffff;
   font-size: 40rpx;
@@ -486,59 +479,4 @@
   margin-top: 18rpx;
   color: #999999;
   font-size: 24rpx;
-}
-
-.video-modal-mask {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 75;
-  background: rgba(0, 0, 0, 0.68);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 34rpx;
-  box-sizing: border-box;
-}
-
-.video-modal {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 16rpx;
-  background: #111111;
-}
-
-.video-modal-head {
-  height: 86rpx;
-  padding: 0 24rpx;
-  display: flex;
-  align-items: center;
-  color: #ffffff;
-}
-
-.video-modal-title {
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 30rpx;
-  font-weight: 800;
-}
-
-.video-modal-close {
-  width: 60rpx;
-  height: 60rpx;
-  text-align: center;
-  line-height: 56rpx;
-  color: #ffffff;
-  font-size: 54rpx;
-}
-
-.video-modal-player {
-  width: 100%;
-  height: 420rpx;
-  display: block;
-  background: #000000;
 }
