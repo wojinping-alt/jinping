@@ -1,0 +1,85 @@
+<view class="mine-page">
+  <view class="profile">
+    <view class="avatar">字</view>
+    <view class="profile-name">{{userName}}</view>
+    <view class="refresh-icon"></view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item">
+      <view class="stat-number"><text class="money">¥</text>{{stats.account}}</view>
+      <view class="stat-label">账户(¥)</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-number">{{stats.coupons}}</view>
+      <view class="stat-label">券码</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-number">{{stats.favorites}}</view>
+      <view class="stat-label">收藏</view>
+    </view>
+    <view class="stat-item" bindtap="goOwned">
+      <view class="stat-number">{{stats.owned}}</view>
+      <view class="stat-label">已购</view>
+    </view>
+  </view>
+
+  <view class="center-row">
+    <view class="book-line"></view>
+    <view class="center-text">学习中心 累计学习 <text>{{stats.learningMinutes}}</text> 分钟</view>
+    <view class="arrow">›</view>
+  </view>
+
+  <view class="panel">
+    <view class="panel-head">
+      <view class="panel-title">订单</view>
+      <view class="panel-link">查看全部订单 ›</view>
+    </view>
+    <view class="order-grid">
+      <view
+        wx:for="{{orderItems}}"
+        wx:key="label"
+        class="order-item"
+        bindtap="tapOrder"
+      >
+        <view class="order-icon {{item.icon}}">
+          <view wx:if="{{item.badge}}" class="badge">{{item.badge}}</view>
+        </view>
+        <view class="order-label">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="tool-title">学习工具</view>
+    <view class="tool-grid">
+      <view
+        wx:for="{{toolItems}}"
+        wx:key="label"
+        class="tool-item"
+        bindtap="tapTool"
+        data-target="{{item.target}}"
+      >
+        <view class="tool-icon"></view>
+        <view class="tool-label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-tabs">
+    <view class="tab" bindtap="goHome">
+      <view class="tab-icon home-icon"></view>
+      <view class="tab-text">首页</view>
+    </view>
+    <view class="tab" bindtap="goOwned">
+      <view class="tab-icon list-icon"></view>
+      <view class="tab-text">已购课程</view>
+    </view>
+    <view class="tab" bindtap="tapPromo">
+      <view class="tab-icon shop-icon"></view>
+      <view class="tab-text">我的推广</view>
+    </view>
+    <view class="tab active">
+      <view class="tab-icon mine-icon"></view>
+      <view class="tab-text">我的</view>
+    </view>
+  </view>
+</view>

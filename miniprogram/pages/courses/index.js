@@ -186,10 +186,22 @@ Page({
 
   switchTab(event) {
     const tab = event.currentTarget.dataset.tab;
-    this.setData({ activeTab: tab });
-    if (tab !== "home") {
-      wx.showToast({ title: "该栏目正在完善", icon: "none" });
+    if (tab === "home") {
+      this.setData({ activeTab: tab });
+      return;
     }
+
+    if (tab === "owned") {
+      wx.navigateTo({ url: "/pages/owned/index" });
+      return;
+    }
+
+    if (tab === "mine") {
+      wx.navigateTo({ url: "/pages/mine/index" });
+      return;
+    }
+
+    wx.showToast({ title: "该栏目正在完善", icon: "none" });
   },
 
   tapMenu(event) {

@@ -3,7 +3,9 @@
     "pages/courses/index",
     "pages/lesson/index",
     "pages/player/index",
-    "pages/playearn/index"
+    "pages/playearn/index",
+    "pages/owned/index",
+    "pages/mine/index"
   ],
   "window": {
     "navigationBarTitleText": "字书",

@@ -1,0 +1,74 @@
+<view class="owned-page">
+  <view class="owned-tabs">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="owned-tab {{activeCategory == item.key ? 'active' : ''}}"
+      bindtap="selectCategory"
+      data-key="{{item.key}}"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="recent-link">查看最近学习 &gt;</view>
+
+  <view wx:if="{{loading}}" class="state">已购课程加载中...</view>
+  <view wx:elif="{{error}}" class="state error">{{error}}</view>
+
+  <block wx:else>
+    <view wx:if="{{activeCategory != 'course'}}" class="empty-card">
+      这个栏目暂时还没有内容
+    </view>
+
+    <view wx:elif="{{ownedCourses.length === 0}}" class="empty-card">
+      <view class="empty-title">还没有已购课程</view>
+      <view class="empty-desc">购买课程后会在这里显示学习入口。</view>
+      <button class="empty-button" bindtap="goHome">去看看课程</button>
+    </view>
+
+    <view wx:else class="owned-list">
+      <view
+        wx:for="{{ownedCourses}}"
+        wx:key="id"
+        class="owned-item"
+        bindtap="openCourse"
+        data-id="{{item.id}}"
+      >
+        <view class="cover-wrap">
+          <image class="owned-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+          <view class="cover-tag">专栏</view>
+        </view>
+        <view class="owned-info">
+          <view class="owned-title">{{item.title}}</view>
+          <view class="owned-line">购买时间： {{item.purchaseTime || '刚刚'}}</view>
+          <view class="owned-line">最新更新： {{item.latestUpdate}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <button class="service-button" open-type="contact">
+    <view class="service-bubble"></view>
+    <view class="service-text">在线客服</view>
+  </button>
+
+  <view class="bottom-tabs">
+    <view class="tab" bindtap="goHome">
+      <view class="tab-icon home-icon"></view>
+      <view class="tab-text">首页</view>
+    </view>
+    <view class="tab active">
+      <view class="tab-icon list-icon"></view>
+      <view class="tab-text">已购课程</view>
+    </view>
+    <view class="tab" bindtap="tapPromo">
+      <view class="tab-icon shop-icon"></view>
+      <view class="tab-text">我的推广</view>
+    </view>
+    <view class="tab" bindtap="goMine">
+      <view class="tab-icon mine-icon"></view>
+      <view class="tab-text">我的</view>
+    </view>
+  </view>
+</view>
