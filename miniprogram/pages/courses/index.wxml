@@ -67,8 +67,9 @@
             ></video>
             <cover-view class="trial-title">{{item.title}}</cover-view>
             <cover-view class="video-ad-tools">
-              <cover-view class="video-tool-btn" catchtap="toggleAdMuted">{{adMuted ? "静音" : "声音"}}</cover-view>
-              <cover-view class="video-tool-btn" catchtap="cycleAdPlaybackRate">{{adPlaybackRateText}}</cover-view>
+              <cover-view class="video-sound-btn" catchtap="toggleAdMuted">{{adMuted ? "静" : "声"}}</cover-view>
+              <cover-view class="video-tool-dot">·</cover-view>
+              <cover-view class="video-rate-btn" catchtap="cycleAdPlaybackRate">{{adPlaybackRateText}} 倍速</cover-view>
             </cover-view>
           </view>
         </swiper-item>

@@ -179,23 +179,40 @@
 
 .video-ad-tools {
   position: absolute;
-  right: 24rpx;
-  bottom: 26rpx;
+  right: 132rpx;
+  bottom: 24rpx;
   z-index: 5;
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
-.video-tool-btn {
-  min-width: 74rpx;
-  height: 44rpx;
-  padding: 0 16rpx;
+.video-sound-btn {
+  width: 42rpx;
+  height: 42rpx;
   border-radius: 999rpx;
   background: rgba(0, 0, 0, 0.58);
   color: #ffffff;
   font-size: 22rpx;
-  line-height: 44rpx;
+  line-height: 42rpx;
+  text-align: center;
+}
+
+.video-tool-dot {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 28rpx;
+  line-height: 42rpx;
+}
+
+.video-rate-btn {
+  min-width: 104rpx;
+  height: 42rpx;
+  padding: 0 12rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.58);
+  color: #ffffff;
+  font-size: 22rpx;
+  line-height: 42rpx;
   text-align: center;
 }
 
