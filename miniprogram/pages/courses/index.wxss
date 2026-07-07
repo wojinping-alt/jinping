@@ -177,6 +177,28 @@
   letter-spacing: 8rpx;
 }
 
+.video-ad-tools {
+  position: absolute;
+  right: 24rpx;
+  bottom: 26rpx;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.video-tool-btn {
+  min-width: 74rpx;
+  height: 44rpx;
+  padding: 0 16rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.58);
+  color: #ffffff;
+  font-size: 22rpx;
+  line-height: 44rpx;
+  text-align: center;
+}
+
 .cover-dark {
   background: #101010;
 }

@@ -49,20 +49,27 @@
         <swiper-item wx:for="{{adItems}}" wx:key="title">
           <view class="video-ad-card">
             <video
+              id="ad-video-{{index}}"
               class="video-ad-player"
               src="{{item.videoUrl}}"
               poster="{{item.image}}"
               controls="{{true}}"
               autoplay="{{false}}"
               loop="{{false}}"
+              muted="{{adMuted}}"
               object-fit="cover"
               show-center-play-btn="{{true}}"
               enable-progress-gesture="{{true}}"
               show-fullscreen-btn="{{true}}"
               show-play-btn="{{true}}"
+              bindplay="onAdVideoPlay"
               binderror="onVideoAdError"
             ></video>
-            <view class="trial-title">{{item.title}}</view>
+            <cover-view class="trial-title">{{item.title}}</cover-view>
+            <cover-view class="video-ad-tools">
+              <cover-view class="video-tool-btn" catchtap="toggleAdMuted">{{adMuted ? "静音" : "声音"}}</cover-view>
+              <cover-view class="video-tool-btn" catchtap="cycleAdPlaybackRate">{{adPlaybackRateText}}</cover-view>
+            </cover-view>
           </view>
         </swiper-item>
       </swiper>

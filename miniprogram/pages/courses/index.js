@@ -57,7 +57,11 @@ Page({
     adItems,
     activeTab: "home",
     showFollowQr: false,
-    activeAdIndex: 0
+    activeAdIndex: 0,
+    adMuted: false,
+    adPlaybackRates: [1, 1.25, 1.5, 2],
+    adPlaybackRateIndex: 0,
+    adPlaybackRateText: "1.0x"
   },
 
   onShow() {
@@ -130,7 +134,46 @@ Page({
   onAdSwiperChange(event) {
     this.setData({
       activeAdIndex: event.detail.current || 0
+    }, () => {
+      this.applyAdPlaybackRate();
     });
+  },
+
+  getCurrentAdVideoContext() {
+    return wx.createVideoContext(`ad-video-${this.data.activeAdIndex}`, this);
+  },
+
+  applyAdPlaybackRate() {
+    const rate = this.data.adPlaybackRates[this.data.adPlaybackRateIndex] || 1;
+    const video = this.getCurrentAdVideoContext();
+    if (video && video.playbackRate) {
+      video.playbackRate(rate);
+    }
+  },
+
+  toggleAdMuted() {
+    this.setData({
+      adMuted: !this.data.adMuted
+    });
+  },
+
+  cycleAdPlaybackRate() {
+    const nextIndex = (this.data.adPlaybackRateIndex + 1) % this.data.adPlaybackRates.length;
+    const rate = this.data.adPlaybackRates[nextIndex];
+    this.setData({
+      adPlaybackRateIndex: nextIndex,
+      adPlaybackRateText: `${rate.toFixed(rate % 1 === 0 ? 1 : 2)}x`
+    }, () => {
+      this.applyAdPlaybackRate();
+      wx.showToast({
+        title: `${this.data.adPlaybackRateText} 倍速`,
+        icon: "none"
+      });
+    });
+  },
+
+  onAdVideoPlay() {
+    this.applyAdPlaybackRate();
   },
 
   onVideoAdError(error) {
