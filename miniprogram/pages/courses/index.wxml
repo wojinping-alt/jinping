@@ -68,13 +68,10 @@
             <cover-view class="trial-title">{{item.title}}</cover-view>
             <cover-view class="video-ad-tools">
               <cover-view class="video-sound-btn" catchtap="toggleAdMuted">
-                <cover-view class="speaker-icon">
-                  <cover-view class="speaker-body"></cover-view>
-                  <cover-view class="speaker-cone"></cover-view>
-                  <cover-view class="speaker-wave"></cover-view>
-                  <cover-view wx:if="{{adMuted}}" class="speaker-x speaker-x-a"></cover-view>
-                  <cover-view wx:if="{{adMuted}}" class="speaker-x speaker-x-b"></cover-view>
-                </cover-view>
+                <cover-image
+                  class="speaker-img"
+                  src="{{adMuted ? '/assets/xet/icon-speaker-muted.png' : '/assets/xet/icon-speaker.png'}}"
+                ></cover-image>
               </cover-view>
               <cover-view class="video-tool-dot">·</cover-view>
               <cover-view class="video-rate-btn" catchtap="cycleAdPlaybackRate">{{adPlaybackRateText}} 倍速</cover-view>
