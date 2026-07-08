@@ -30,20 +30,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "请先登录小程序" }, { status: 401 });
     }
 
-    const { courseId } = await req.json();
+    const { courseId, gift } = await req.json();
     if (!courseId) {
       return NextResponse.json({ error: "缺少课程 ID" }, { status: 400 });
     }
 
-    const { data: existingAccess } = await supabase
-      .from("user_courses")
-      .select("course_id")
-      .eq("course_id", courseId)
-      .eq("user_id", user.id)
-      .maybeSingle();
+    if (!gift) {
+      const { data: existingAccess } = await supabase
+        .from("user_courses")
+        .select("course_id")
+        .eq("course_id", courseId)
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-    if (existingAccess) {
-      return NextResponse.json({ paid: true, message: "课程已购买" });
+      if (existingAccess) {
+        return NextResponse.json({ paid: true, message: "课程已购买" });
+      }
     }
 
     const { data: course, error: courseError } = await supabase
@@ -64,7 +66,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "课程价格配置错误" }, { status: 400 });
     }
 
-    const outTradeNo = `MP${Date.now()}${Math.random()
+    const outTradeNo = `${gift ? "MPGIFT" : "MP"}${Date.now()}${Math.random()
       .toString(36)
       .slice(2, 8)
       .toUpperCase()}`;
@@ -90,7 +92,7 @@ export async function POST(req: Request) {
     }
 
     const payData = await createWechatPayOrder({
-      description: `购买课程 ${course.title}`.slice(0, 127),
+      description: `${gift ? "赠送课程" : "购买课程"} ${course.title}`.slice(0, 127),
       outTradeNo,
       amountFen: Math.round(amount * 100),
       notifyUrl: buildNotifyUrl(req),

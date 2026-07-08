@@ -13,7 +13,7 @@
 
     <view class="cover-wrap">
       <image class="detail-cover" src="{{course.coverAsset}}" mode="aspectFill"></image>
-      <view class="share-chip" bindtap="sendFriend">
+      <view class="share-chip" bindtap="openPoster">
         <view class="share-icon">♡</view>
         <view>分享</view>
       </view>
@@ -23,7 +23,7 @@
     <view class="detail-main">
       <view class="title-row">
         <view class="title">{{course.displayTitle}}</view>
-        <view class="gift" bindtap="sendFriend"><view class="gift-icon"></view><text>送好友</text></view>
+        <view class="gift" bindtap="openGiftOrder"><view class="gift-icon"></view><text>送好友</text></view>
       </view>
       <view class="meta-line">
         <text>{{unlocked ? "已购买" : "购买后解锁"}}</text>
@@ -94,6 +94,72 @@
         购买合集
       </button>
       <view wx:else class="unlocked" bindtap="startLearning">开始学习</view>
+    </view>
+
+    <view wx:if="{{showPoster}}" class="modal-mask" bindtap="closePoster">
+      <view class="poster-panel" catchtap="stopBubble">
+        <view class="poster-title">商品海报页</view>
+        <view class="poster-card">
+          <view class="poster-window">
+            <view class="poster-top">
+              <view class="poster-avatar">字</view>
+              <view>
+                <view class="poster-name">字书用户</view>
+                <view class="poster-invite">邀请你一起学习</view>
+              </view>
+            </view>
+            <image class="poster-cover" src="{{course.coverAsset}}" mode="aspectFill"></image>
+            <view class="poster-course">{{course.displayTitle}}</view>
+            <view class="poster-shop">字书</view>
+            <image class="poster-qr" src="{{posterQrUrl}}" mode="aspectFit" show-menu-by-longpress="true"></image>
+            <view class="poster-tip">长按扫码查看详情</view>
+          </view>
+        </view>
+        <view class="poster-note">长按上方图片保存并分享</view>
+        <view class="poster-actions">
+          <button class="poster-action" open-type="share" data-share-type="course">分享到微信</button>
+          <view class="poster-action" bindtap="copyShareLink">复制链接</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{showGiftOrder}}" class="modal-mask" bindtap="closeGiftOrder">
+      <view class="gift-sheet" catchtap="stopBubble">
+        <view class="gift-steps">
+          <view class="gift-step active"><view class="step-icon bag"></view><text>1. 购买礼物</text></view>
+          <view class="gift-step"><view class="step-icon present"></view><text>2. 赠送好友</text></view>
+          <view class="gift-step"><view class="step-icon box"></view><text>3. 好友收礼</text></view>
+        </view>
+        <view class="gift-product">
+          <image class="gift-cover" src="{{course.coverAsset}}" mode="aspectFill"></image>
+          <view class="gift-info">
+            <view class="gift-title">{{course.displayTitle}}</view>
+            <view class="gift-price">¥ {{course.priceText}}</view>
+          </view>
+          <view class="quantity">- <text>1</text> +</view>
+        </view>
+        <view class="gift-row">
+          <view>优惠券/码</view>
+          <view class="muted">无可用优惠券 ›</view>
+        </view>
+        <view class="gift-row">
+          <view>留言</view>
+          <input class="gift-input" value="{{giftMessage}}" bindinput="onGiftMessageInput" placeholder="选填，建议和好友沟通后再填" />
+        </view>
+        <view class="gift-submit-bar">
+          <view class="gift-total">¥ {{course.priceText}}</view>
+          <button class="gift-submit" loading="{{giftPaying}}" bindtap="submitGiftOrder">提交订单</button>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{showGiftShare}}" class="modal-mask" bindtap="closeGiftShare">
+      <view class="gift-share-panel" catchtap="stopBubble">
+        <view class="gift-share-title">礼物已准备好</view>
+        <view class="gift-share-desc">点击下方按钮转发给好友，好友打开后即可领取课程。</view>
+        <button class="gift-share-btn" open-type="share" data-share-type="gift">赠送好友</button>
+        <view class="gift-share-cancel" bindtap="closeGiftShare">稍后再发</view>
+      </view>
     </view>
   </block>
 </view>

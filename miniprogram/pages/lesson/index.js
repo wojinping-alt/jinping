@@ -80,8 +80,11 @@ function getEpisodeDate(kind, episodeNumber) {
 Page({
   data: {
     courseId: "",
+    referrer: "",
+    giftCode: "",
     loading: true,
     paying: false,
+    giftPaying: false,
     error: "",
     course: null,
     episodes: [],
@@ -89,11 +92,25 @@ Page({
     loggedIn: false,
     activeTab: "catalog",
     detailImages: [],
-    courseKind: "other"
+    courseKind: "other",
+    showPoster: false,
+    showGiftOrder: false,
+    showGiftShare: false,
+    posterQrUrl: "",
+    sharePath: "",
+    giftSharePath: "",
+    giftMessage: ""
   },
 
   onLoad(options) {
-    this.setData({ courseId: options.id });
+    this.setData({
+      courseId: options.id,
+      referrer: options.ref || "",
+      giftCode: options.gift || ""
+    });
+    if (options.gift) {
+      this.claimGift(options.gift);
+    }
   },
 
   onShow() {
@@ -187,12 +204,141 @@ Page({
     }
   },
 
+  async claimGift(giftCode) {
+    try {
+      await ensureLogin();
+      const data = await request({
+        url: "/api/miniprogram/gift/claim",
+        method: "POST",
+        data: { giftCode }
+      });
+      if (data.claimed) {
+        wx.showToast({ title: "礼物领取成功" });
+        setTimeout(() => this.loadLesson(), 800);
+      }
+    } catch (error) {
+      wx.showToast({ title: error.message || "礼物领取失败", icon: "none" });
+    }
+  },
+
+  getShareRef() {
+    return wx.getStorageSync("zishoo_openid") || "guest";
+  },
+
+  buildSharePath(extra = "") {
+    const ref = encodeURIComponent(this.getShareRef());
+    const suffix = extra ? `&${extra}` : "";
+    return `/pages/lesson/index?id=${this.data.courseId}&ref=${ref}${suffix}`;
+  },
+
+  async openPoster() {
+    try {
+      await ensureLogin();
+      const sharePath = this.buildSharePath();
+      this.setData({
+        showPoster: true,
+        sharePath,
+        posterQrUrl: `${app.globalData.apiBase}/api/miniprogram/share-qr?path=${encodeURIComponent(sharePath)}`
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "请先登录后分享", icon: "none" });
+    }
+  },
+
+  closePoster() {
+    this.setData({ showPoster: false });
+  },
+
+  copyShareLink() {
+    const link = `${app.globalData.apiBase}/lesson/${this.data.courseId}?ref=${encodeURIComponent(this.getShareRef())}`;
+    wx.setClipboardData({ data: link });
+  },
+
   selectTab(event) {
     this.setData({ activeTab: event.currentTarget.dataset.tab });
   },
 
   sendFriend() {
-    wx.showToast({ title: "请点击右上角分享给好友", icon: "none" });
+    this.openPoster();
+  },
+
+  openGiftOrder() {
+    this.setData({ showGiftOrder: true, giftMessage: "" });
+  },
+
+  closeGiftOrder() {
+    this.setData({ showGiftOrder: false });
+  },
+
+  onGiftMessageInput(event) {
+    this.setData({ giftMessage: event.detail.value });
+  },
+
+  async submitGiftOrder() {
+    this.setData({ giftPaying: true });
+    try {
+      await ensureLogin();
+      const data = await request({
+        url: "/api/miniprogram/pay",
+        method: "POST",
+        data: { courseId: this.data.courseId, gift: true }
+      });
+
+      const payParams = data.payParams;
+      wx.requestPayment({
+        timeStamp: payParams.timeStamp,
+        nonceStr: payParams.nonceStr,
+        package: payParams.package,
+        signType: payParams.signType,
+        paySign: payParams.paySign,
+        success: () => {
+          const giftSharePath = this.buildSharePath(`gift=${encodeURIComponent(data.outTradeNo)}`);
+          this.setData({
+            showGiftOrder: false,
+            showGiftShare: true,
+            giftSharePath,
+            giftCode: data.outTradeNo
+          });
+          wx.showToast({ title: "支付成功，转发给好友领取" });
+        },
+        fail: (error) => {
+          if (error.errMsg && error.errMsg.includes("cancel")) {
+            wx.showToast({ title: "已取消支付", icon: "none" });
+          } else {
+            wx.showToast({ title: "支付未完成", icon: "none" });
+          }
+        },
+        complete: () => {
+          this.setData({ giftPaying: false });
+        }
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "赠送下单失败", icon: "none" });
+      this.setData({ giftPaying: false });
+    }
+  },
+
+  closeGiftShare() {
+    this.setData({ showGiftShare: false });
+  },
+
+  stopBubble() {},
+
+  onShareAppMessage(event) {
+    const shareType = event && event.target && event.target.dataset.shareType;
+    if (shareType === "gift" && this.data.giftSharePath) {
+      return {
+        title: `送你一门课：${this.data.course.displayTitle}`,
+        path: this.data.giftSharePath,
+        imageUrl: this.data.course.coverAsset
+      };
+    }
+
+    return {
+      title: this.data.course ? this.data.course.displayTitle : "字书课程",
+      path: this.data.sharePath || this.buildSharePath(),
+      imageUrl: this.data.course ? this.data.course.coverAsset : ""
+    };
   },
 
   startLearning() {

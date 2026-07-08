@@ -72,6 +72,10 @@ export async function POST(req: Request) {
       if (updateError) throw updateError;
     }
 
+    if (outTradeNo.startsWith("MPGIFT")) {
+      return NextResponse.json({ code: "SUCCESS", message: "gift paid" });
+    }
+
     const { error: accessError } = await supabase
       .from("user_courses")
       .upsert(
