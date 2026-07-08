@@ -116,7 +116,7 @@ Page({
   },
 
   onShow() {
-    if (this.data.courseId) {
+    if (this.data.courseId && !this.data.course) {
       this.loadLesson();
     }
   },
