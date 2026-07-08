@@ -425,6 +425,42 @@
   text-align: center;
 }
 
+.poster-image-wrap {
+  margin: 24rpx auto 0;
+  width: 480rpx;
+  min-height: 720rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poster-image {
+  width: 480rpx;
+  border-radius: 18rpx;
+  box-shadow: 0 12rpx 32rpx rgba(15, 23, 42, 0.18);
+  display: block;
+}
+
+.poster-loading {
+  width: 480rpx;
+  height: 720rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  color: #888888;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poster-canvas {
+  position: fixed;
+  left: -10000px;
+  top: -10000px;
+  width: 600px;
+  height: 900px;
+}
+
 .poster-card {
   margin: 22rpx auto 0;
   width: 480rpx;

@@ -99,25 +99,21 @@
     <view wx:if="{{showPoster}}" class="modal-mask" bindtap="closePoster">
       <view class="poster-panel" catchtap="stopBubble">
         <view class="poster-title">商品海报页</view>
-        <view class="poster-card">
-          <view class="poster-window">
-            <view class="poster-top">
-              <view class="poster-avatar">字</view>
-              <view>
-                <view class="poster-name">字书用户</view>
-                <view class="poster-invite">邀请你一起学习</view>
-              </view>
-            </view>
-            <image class="poster-cover" src="{{course.coverAsset}}" mode="aspectFill"></image>
-            <view class="poster-course">{{course.displayTitle}}</view>
-            <view class="poster-shop">字书</view>
-            <image class="poster-qr" src="{{posterQrUrl}}" mode="aspectFit" show-menu-by-longpress="true"></image>
-            <view class="poster-tip">长按扫码查看详情</view>
-          </view>
+        <view class="poster-image-wrap">
+          <image
+            wx:if="{{posterImagePath}}"
+            class="poster-image"
+            src="{{posterImagePath}}"
+            mode="widthFix"
+            show-menu-by-longpress="{{true}}"
+            bindtap="previewPosterImage"
+          ></image>
+          <view wx:else class="poster-loading">{{posterGenerating ? "海报生成中..." : "海报生成失败"}}</view>
         </view>
-        <view class="poster-note">长按上方图片保存并分享</view>
+        <canvas canvas-id="sharePosterCanvas" class="poster-canvas"></canvas>
+        <view class="poster-note">长按上方海报，选择“转发给朋友”即可发送图片</view>
         <view class="poster-actions">
-          <button class="poster-action" open-type="share" data-share-type="course">分享到微信</button>
+          <view class="poster-action" bindtap="savePosterImage">保存图片</view>
           <view class="poster-action" bindtap="copyShareLink">复制链接</view>
         </view>
       </view>

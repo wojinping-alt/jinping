@@ -1,5 +1,5 @@
 update public.courses
-set price = 399
+set price = 0.01
 where id in (101, 102);
 
 update public.courses

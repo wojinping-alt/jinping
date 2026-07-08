@@ -97,6 +97,8 @@ Page({
     showGiftOrder: false,
     showGiftShare: false,
     posterQrUrl: "",
+    posterImagePath: "",
+    posterGenerating: false,
     sharePath: "",
     giftSharePath: "",
     giftMessage: ""
@@ -238,15 +240,175 @@ Page({
       this.setData({
         showPoster: true,
         sharePath,
-        posterQrUrl: `${app.globalData.apiBase}/api/miniprogram/share-qr?path=${encodeURIComponent(sharePath)}`
+        posterQrUrl: `${app.globalData.apiBase}/api/miniprogram/share-qr?path=${encodeURIComponent(sharePath)}`,
+        posterImagePath: "",
+        posterGenerating: true
       });
+      setTimeout(() => {
+        this.generatePosterImage();
+      }, 80);
     } catch (error) {
       wx.showToast({ title: error.message || "请先登录后分享", icon: "none" });
     }
   },
 
+  downloadPosterAsset(url) {
+    return new Promise((resolve, reject) => {
+      if (!url) {
+        reject(new Error("图片地址为空"));
+        return;
+      }
+      if (url.startsWith("/")) {
+        resolve(url);
+        return;
+      }
+      wx.downloadFile({
+        url,
+        success: (res) => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(res.tempFilePath);
+          } else {
+            reject(new Error(`图片下载失败 ${res.statusCode}`));
+          }
+        },
+        fail: reject
+      });
+    });
+  },
+
+  drawPosterText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    const chars = String(text || "").split("");
+    let line = "";
+    let lineCount = 0;
+    for (let index = 0; index < chars.length; index += 1) {
+      const testLine = line + chars[index];
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        lineCount += 1;
+        if (lineCount >= maxLines) {
+          ctx.fillText(`${line.slice(0, Math.max(0, line.length - 1))}...`, x, y);
+          return;
+        }
+        ctx.fillText(line, x, y);
+        line = chars[index];
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    if (line && lineCount < maxLines) {
+      ctx.fillText(line, x, y);
+    }
+  },
+
+  async generatePosterImage() {
+    try {
+      const course = this.data.course || {};
+      const coverPath = await this.downloadPosterAsset(course.coverImage || course.coverAsset);
+      const qrPath = await this.downloadPosterAsset(this.data.posterQrUrl);
+      const ctx = wx.createCanvasContext("sharePosterCanvas", this);
+
+      ctx.setFillStyle("#62c5ff");
+      ctx.fillRect(0, 0, 600, 900);
+      ctx.setFillStyle("#e6f7ff");
+      ctx.fillRect(0, 650, 600, 250);
+
+      ctx.setFillStyle("#ffffff");
+      ctx.fillRect(54, 50, 492, 800);
+      ctx.setStrokeStyle("#1f2937");
+      ctx.setLineWidth(4);
+      ctx.strokeRect(54, 50, 492, 800);
+
+      ctx.setFillStyle("#fff28a");
+      ctx.fillRect(58, 54, 484, 135);
+      ctx.setFillStyle("#ffffff");
+      ctx.beginPath();
+      ctx.arc(118, 120, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.setFillStyle("#d6a400");
+      ctx.setFontSize(36);
+      ctx.setTextAlign("center");
+      ctx.fillText("字", 118, 132);
+
+      ctx.setTextAlign("left");
+      ctx.setFillStyle("#111111");
+      ctx.setFontSize(28);
+      ctx.fillText("字书用户", 170, 112);
+      ctx.setFillStyle("#333333");
+      ctx.setFontSize(23);
+      ctx.fillText("邀请你一起学习", 170, 148);
+
+      ctx.setFillStyle("#bfeeff");
+      ctx.fillRect(76, 210, 448, 162);
+      ctx.drawImage(coverPath, 76, 210, 448, 162);
+
+      ctx.setFillStyle("#ffd3de");
+      ctx.fillRect(88, 405, 424, 74);
+      ctx.setFillStyle("#111111");
+      ctx.setFontSize(24);
+      this.drawPosterText(ctx, course.displayTitle || course.title || "字书课程", 110, 450, 380, 30, 1);
+
+      ctx.setFillStyle("#111111");
+      ctx.setFontSize(28);
+      ctx.setTextAlign("center");
+      ctx.fillText("字书", 300, 538);
+      ctx.setFillStyle("#ffffff");
+      ctx.fillRect(206, 560, 188, 188);
+      ctx.drawImage(qrPath, 216, 570, 168, 168);
+
+      ctx.setFillStyle("#333333");
+      ctx.setFontSize(20);
+      ctx.fillText("长按扫码查看详情", 300, 778);
+      ctx.setFillStyle("#b5c8d8");
+      ctx.setFontSize(18);
+      ctx.fillText("字书 Zishoo", 300, 824);
+
+      ctx.draw(false, () => {
+        wx.canvasToTempFilePath({
+          canvasId: "sharePosterCanvas",
+          width: 600,
+          height: 900,
+          destWidth: 1200,
+          destHeight: 1800,
+          success: (res) => {
+            this.setData({
+              posterImagePath: res.tempFilePath,
+              posterGenerating: false
+            });
+          },
+          fail: (error) => {
+            this.setData({ posterGenerating: false });
+            wx.showToast({ title: error.errMsg || "海报生成失败", icon: "none" });
+          }
+        }, this);
+      });
+    } catch (error) {
+      this.setData({ posterGenerating: false });
+      wx.showToast({ title: error.message || "海报生成失败", icon: "none" });
+    }
+  },
+
   closePoster() {
     this.setData({ showPoster: false });
+  },
+
+  previewPosterImage() {
+    if (!this.data.posterImagePath) return;
+    wx.previewImage({
+      current: this.data.posterImagePath,
+      urls: [this.data.posterImagePath]
+    });
+  },
+
+  savePosterImage() {
+    if (!this.data.posterImagePath) {
+      wx.showToast({ title: "海报还在生成", icon: "none" });
+      return;
+    }
+    wx.saveImageToPhotosAlbum({
+      filePath: this.data.posterImagePath,
+      success: () => wx.showToast({ title: "已保存" }),
+      fail: () => wx.showToast({ title: "保存失败，请长按图片保存", icon: "none" })
+    });
   },
 
   copyShareLink() {
