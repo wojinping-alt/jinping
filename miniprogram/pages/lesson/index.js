@@ -28,7 +28,6 @@ function getDisplayTitle(title) {
 
 function getDetailImages(kind) {
   const q1 = [
-    `${assetBase}/course-q1/cover.webp`,
     `${assetBase}/course-q1/Q11.jpg`,
     `${assetBase}/course-q1/Q12.jpg`,
     `${assetBase}/course-q1/Q13.jpg`,
@@ -46,7 +45,6 @@ function getDetailImages(kind) {
 
   if (kind === "q2") {
     return [
-      `${assetBase}/course-q2/cover.webp`,
       `${assetBase}/course-q2/Q21.jpg`,
       `${assetBase}/course-q1/Q12.jpg`,
       `${assetBase}/course-q1/Q13.jpg`,
@@ -65,6 +63,12 @@ function getDetailImages(kind) {
 
   if (kind === "q1") return q1;
   return [];
+}
+
+function getHeroCover(kind, title) {
+  if (kind === "q2") return `${assetBase}/course-q2/cover.webp`;
+  if (kind === "q1") return `${assetBase}/course-q1/cover.webp`;
+  return getCoverImage(title);
 }
 
 function getEpisodeDate(kind, episodeNumber) {
@@ -113,7 +117,7 @@ Page({
         course: {
           ...course,
           displayTitle,
-          coverAsset: getDetailImages(courseKind)[0] || getCoverImage(course.title || ""),
+          coverAsset: getHeroCover(courseKind, course.title || ""),
           priceText: Number(course.price || 0).toFixed(2),
           coverImage: getCoverImage(course.title || ""),
           subscriberCount: episodeCount || 22
