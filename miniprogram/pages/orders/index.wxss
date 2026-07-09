@@ -275,6 +275,19 @@
   font-size: 38rpx;
 }
 
+.remaining {
+  flex: 1;
+  min-width: 0;
+  color: #333333;
+  font-size: 36rpx;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.remaining text {
+  color: #ef5b35;
+}
+
 .total-price {
   color: #222222;
   font-size: 48rpx;
@@ -304,4 +317,15 @@
 .action-btn.primary {
   background: #eef5ff;
   color: #2f80ed;
+}
+
+.status.pending {
+  color: #2f80ed;
+}
+
+.list-end {
+  padding: 36rpx 0 80rpx;
+  color: #333333;
+  font-size: 36rpx;
+  text-align: center;
 }

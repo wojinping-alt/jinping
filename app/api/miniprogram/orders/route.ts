@@ -52,6 +52,19 @@ function formatDateTime(value: string | null | undefined) {
   )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
+function getPendingRemainingText(status: string | null | undefined, createdAt: string | null | undefined) {
+  if (status !== "pending" || !createdAt) return "";
+  const created = new Date(createdAt).getTime();
+  if (Number.isNaN(created)) return "";
+  const remaining = created + 2 * 60 * 60 * 1000 - Date.now();
+  if (remaining <= 0) return "已超时，可取消";
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(hours)}时${pad(minutes)}分${pad(seconds)}秒`;
+}
+
 function normalizeStatus(status: string | null | undefined) {
   if (status === "paid") return { key: "paid", label: "交易完成" };
   if (status === "closed" || status === "cancelled" || status === "canceled") {
@@ -142,6 +155,7 @@ export async function GET(req: Request) {
       quantity: 1,
       status: status.key,
       statusLabel: status.label,
+      remainingText: getPendingRemainingText(order.status, order.created_at),
       createdAt: order.created_at || "",
       createdAtText: formatDateTime(order.created_at),
       paidAtText: formatDateTime(order.paid_at),
@@ -168,6 +182,7 @@ export async function GET(req: Request) {
       quantity,
       status: status.key,
       statusLabel: status.label,
+      remainingText: getPendingRemainingText(order.status, order.created_at),
       createdAt: order.created_at || "",
       createdAtText: formatDateTime(order.created_at),
       paidAtText: formatDateTime(order.paid_at),
@@ -179,4 +194,48 @@ export async function GET(req: Request) {
   );
 
   return NextResponse.json({ orders });
+}
+
+export async function POST(req: Request) {
+  const { supabase, user } = await getPayUser(req);
+
+  if (!user) {
+    return NextResponse.json({ error: "请先登录小程序" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const orderId = String(body.orderId || "");
+  const type = String(body.type || "course");
+
+  if (!orderId) {
+    return NextResponse.json({ error: "缺少订单 ID" }, { status: 400 });
+  }
+
+  const db = (() => {
+    try {
+      return createAdminClient();
+    } catch {
+      return supabase;
+    }
+  })();
+
+  const table = type === "product" ? "product_orders" : "orders";
+  const { data, error } = await db
+    .from(table)
+    .update({ status: "closed" })
+    .eq("id", orderId)
+    .eq("user_id", user.id)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (!data) {
+    return NextResponse.json({ error: "订单不存在或已不能取消" }, { status: 400 });
+  }
+
+  return NextResponse.json({ ok: true });
 }

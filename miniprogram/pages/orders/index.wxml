@@ -19,7 +19,7 @@
         bindtap="selectTab"
       >
         {{item.label}}
-        <view wx:if="{{item.badge}}" class="tab-badge">{{item.badge}}</view>
+        <view wx:if="{{item.badge > 0}}" class="tab-badge">{{item.badge}}</view>
       </view>
     </view>
   </scroll-view>
@@ -58,6 +58,9 @@
       </view>
 
       <view class="order-total">
+        <view wx:if="{{item.status == 'pending'}}" class="remaining">
+          剩余时间：<text>{{item.remainingText || "02时00分00秒"}}</text>
+        </view>
         <text>{{item.status == "paid" ? "实付：" : "需付："}}</text>
         <text class="total-price">¥ {{item.status == "paid" ? item.amountText : item.amountText}}</text>
       </view>
@@ -67,8 +70,14 @@
         <view class="action-btn primary" catchtap="reviewOrder">评价</view>
       </view>
       <view wx:elif="{{item.status == 'pending'}}" class="order-actions">
-        <view class="action-btn primary" catchtap="payAgain">去付款</view>
+        <view
+          class="action-btn"
+          data-id="{{item.id}}"
+          catchtap="cancelOrder"
+        >{{canceling == item.id ? "取消中" : "取消"}}</view>
+        <view class="action-btn primary" data-id="{{item.id}}" catchtap="payAgain">立即付款</view>
       </view>
     </view>
+    <view class="list-end">没有更多了~</view>
   </view>
 </view>
