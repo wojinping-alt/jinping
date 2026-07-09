@@ -8,10 +8,6 @@ const baseOrderItems = [
   { label: "退款/售后", icon: "refund", status: "refund" }
 ];
 
-function getReviewedOrders() {
-  return wx.getStorageSync("zishooReviews") || {};
-}
-
 Page({
   data: {
     loading: true,
@@ -64,12 +60,11 @@ Page({
   },
 
   buildOrderItems(orders) {
-    const reviewedOrders = getReviewedOrders();
     const counts = {
       pending: orders.filter((order) => order.status === "pending").length,
       shipping: orders.filter((order) => order.type === "product" && order.status === "paid").length,
       receiving: 0,
-      review: orders.filter((order) => order.status === "paid" && !reviewedOrders[order.orderId]).length,
+      review: orders.filter((order) => order.status === "paid").length,
       refund: orders.filter((order) => order.status === "refund").length
     };
     return baseOrderItems.map((item) => ({ ...item, badge: counts[item.status] || 0 }));

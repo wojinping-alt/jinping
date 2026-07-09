@@ -9,10 +9,6 @@ const tabs = [
   { key: "refund", label: "退款/售后" }
 ];
 
-function getReviewedOrders() {
-  return wx.getStorageSync("zishooReviews") || {};
-}
-
 Page({
   data: {
     loading: true,
@@ -58,14 +54,13 @@ Page({
   applyFilters() {
     const keyword = this.data.keyword.trim().toLowerCase();
     const activeTab = this.data.activeTab;
-    const reviewedOrders = getReviewedOrders();
     const filteredOrders = this.data.orders.filter((order) => {
       const statusMatched =
         activeTab === "all" ||
         order.status === activeTab ||
         (activeTab === "shipping" && order.type === "product" && order.status === "paid") ||
         (activeTab === "receiving" && false) ||
-        (activeTab === "review" && order.status === "paid" && !reviewedOrders[order.orderId]);
+        (activeTab === "review" && order.status === "paid");
       const keywordMatched =
         !keyword ||
         String(order.title || "").toLowerCase().includes(keyword) ||
@@ -76,11 +71,8 @@ Page({
   },
 
   updateTabs() {
-    const reviewedOrders = getReviewedOrders();
     const pendingCount = this.data.orders.filter((order) => order.status === "pending").length;
-    const reviewCount = this.data.orders.filter(
-      (order) => order.status === "paid" && !reviewedOrders[order.orderId]
-    ).length;
+    const reviewCount = this.data.orders.filter((order) => order.status === "paid").length;
     this.setData({
       tabs: tabs.map((tab) => {
         if (tab.key === "pending") return { ...tab, badge: pendingCount || 0 };
