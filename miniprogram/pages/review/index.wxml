@@ -1,57 +1,101 @@
-<view class="review-page">
+<view class="review-page {{mode == 'detail' ? 'detail-page' : ''}}">
   <view class="product-row">
     <image class="product-cover" src="{{cover}}" mode="aspectFill"></image>
     <view class="product-info">
       <view class="product-title">{{title}}</view>
-      <view class="product-subtitle">{{subtitle}}</view>
+      <view wx:if="{{mode == 'detail' && amount}}" class="product-price">¥{{amount}}</view>
+      <view wx:else class="product-subtitle">{{subtitle}}</view>
     </view>
   </view>
 
-  <view class="score-row">
-    <view class="score-label">评分</view>
-    <view class="stars">
-      <text
-        wx:for="{{stars}}"
+  <block wx:if="{{mode == 'detail'}}">
+    <view class="review-detail-card">
+      <view class="review-user-row">
+        <image wx:if="{{avatarUrl && !anonymous}}" class="review-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="review-avatar fallback">字</view>
+        <view class="review-user-main">
+          <view class="review-user-name">{{userName}}</view>
+          <view class="review-star-line">
+            <text wx:for="{{stars}}" wx:key="*this" class="detail-star {{score >= item ? 'active' : ''}}">★</text>
+            <text class="review-course-name">｜{{subtitle || title}}</text>
+          </view>
+        </view>
+        <view class="more-dot" bindtap="toggleMenu">⋮</view>
+        <view wx:if="{{showMenu}}" class="review-menu">
+          <view bindtap="editReview">修改评价</view>
+          <view bindtap="deleteReview">删除评价</view>
+          <view bindtap="setAnonymousFromMenu">匿名</view>
+        </view>
+      </view>
+
+      <view class="review-content">{{content || "这个课程很有帮助"}}</view>
+      <view wx:if="{{images.length}}" class="detail-images">
+        <image
+          wx:for="{{images}}"
+          wx:key="*this"
+          class="detail-image"
+          src="{{item}}"
+          mode="aspectFill"
+          data-index="{{index}}"
+          bindtap="previewImage"
+        ></image>
+      </view>
+      <view class="review-meta">{{reviewTime}} 广东省，</view>
+      <view class="useful-row">♡ 有用</view>
+    </view>
+
+    <view class="append-bar">
+      <view class="append-btn" bindtap="appendReview">追评</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="score-row">
+      <view class="score-label">评分</view>
+      <view class="stars">
+        <text
+          wx:for="{{stars}}"
+          wx:key="*this"
+          class="star {{score >= item ? 'active' : ''}}"
+          data-score="{{item}}"
+          bindtap="selectScore"
+        >★</text>
+      </view>
+    </view>
+
+    <textarea
+      class="content-input"
+      value="{{content}}"
+      maxlength="500"
+      placeholder="从多个角度评价商品，可以帮助更多想买的人"
+      bindinput="onContentInput"
+    />
+
+    <view class="image-row">
+      <view
+        wx:for="{{images}}"
         wx:key="*this"
-        class="star {{score >= item ? 'active' : ''}}"
-        data-score="{{item}}"
-        bindtap="selectScore"
-      >★</text>
+        class="upload-box uploaded"
+        data-index="{{index}}"
+        bindtap="previewImage"
+      >
+        <image class="upload-image" src="{{item}}" mode="aspectFill"></image>
+        <view class="remove-image" data-index="{{index}}" catchtap="removeImage">×</view>
+      </view>
+      <view wx:if="{{images.length < 3}}" class="upload-box" bindtap="chooseImages">
+        <view class="image-icon"></view>
+        <view>添加图片</view>
+      </view>
     </view>
-  </view>
 
-  <textarea
-    class="content-input"
-    value="{{content}}"
-    maxlength="500"
-    placeholder="从多个角度评价商品，可以帮助更多想买的人"
-    bindinput="onContentInput"
-  />
-
-  <view class="image-row">
-    <view
-      wx:for="{{images}}"
-      wx:key="*this"
-      class="upload-box uploaded"
-      data-index="{{index}}"
-      bindtap="previewImage"
-    >
-      <image class="upload-image" src="{{item}}" mode="aspectFill"></image>
-      <view class="remove-image" data-index="{{index}}" catchtap="removeImage">×</view>
+    <view class="anonymous-row" bindtap="toggleAnonymous">
+      <view class="checkbox {{anonymous ? 'checked' : ''}}"></view>
+      <view class="anonymous-title">匿名评价</view>
+      <view class="anonymous-desc">勾选后你的头像和昵称将不会对外展示</view>
     </view>
-    <view wx:if="{{images.length < 3}}" class="upload-box" bindtap="chooseImages">
-      <view class="image-icon"></view>
-      <view>添加图片</view>
+
+    <view class="submit-bar">
+      <button class="submit-btn" loading="{{submitting}}" bindtap="submitReview">提交评价</button>
     </view>
-  </view>
-
-  <view class="anonymous-row" bindtap="toggleAnonymous">
-    <view class="checkbox {{anonymous ? 'checked' : ''}}"></view>
-    <view class="anonymous-title">匿名评价</view>
-    <view class="anonymous-desc">勾选后你的头像和昵称将不会对外展示</view>
-  </view>
-
-  <view class="submit-bar">
-    <button class="submit-btn" loading="{{submitting}}" bindtap="submitReview">提交评价</button>
-  </view>
+  </block>
 </view>

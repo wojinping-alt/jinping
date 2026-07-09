@@ -9,6 +9,10 @@ const tabs = [
   { key: "refund", label: "退款/售后" }
 ];
 
+function getReviewedOrders() {
+  return wx.getStorageSync("zishooReviews") || {};
+}
+
 Page({
   data: {
     loading: true,
@@ -19,6 +23,11 @@ Page({
     error: "",
     keyword: "",
     activeTab: "all",
+    reviewSubTab: "pending",
+    reviewCounts: {
+      pending: 0,
+      evaluated: 0
+    },
     tabs,
     orders: [],
     filteredOrders: []
@@ -54,13 +63,22 @@ Page({
   applyFilters() {
     const keyword = this.data.keyword.trim().toLowerCase();
     const activeTab = this.data.activeTab;
+    const reviewedOrders = getReviewedOrders();
     const filteredOrders = this.data.orders.filter((order) => {
-      const statusMatched =
-        activeTab === "all" ||
-        order.status === activeTab ||
-        (activeTab === "shipping" && order.type === "product" && order.status === "paid") ||
-        (activeTab === "receiving" && false) ||
-        (activeTab === "review" && order.status === "paid");
+      let statusMatched =
+        activeTab === "all" || order.status === activeTab;
+      if (activeTab === "shipping") {
+        statusMatched = order.type === "product" && order.status === "paid";
+      }
+      if (activeTab === "receiving") {
+        statusMatched = false;
+      }
+      if (activeTab === "review") {
+        const hasReview = Boolean(reviewedOrders[order.orderId]);
+        statusMatched =
+          order.status === "paid" &&
+          (this.data.reviewSubTab === "evaluated" ? hasReview : !hasReview);
+      }
       const keywordMatched =
         !keyword ||
         String(order.title || "").toLowerCase().includes(keyword) ||
@@ -71,12 +89,22 @@ Page({
   },
 
   updateTabs() {
+    const reviewedOrders = getReviewedOrders();
     const pendingCount = this.data.orders.filter((order) => order.status === "pending").length;
-    const reviewCount = this.data.orders.filter((order) => order.status === "paid").length;
+    const reviewPendingCount = this.data.orders.filter(
+      (order) => order.status === "paid" && !reviewedOrders[order.orderId]
+    ).length;
+    const evaluatedCount = this.data.orders.filter(
+      (order) => order.status === "paid" && reviewedOrders[order.orderId]
+    ).length;
     this.setData({
+      reviewCounts: {
+        pending: reviewPendingCount,
+        evaluated: evaluatedCount
+      },
       tabs: tabs.map((tab) => {
         if (tab.key === "pending") return { ...tab, badge: pendingCount || 0 };
-        if (tab.key === "review") return { ...tab, badge: reviewCount || 0 };
+        if (tab.key === "review") return { ...tab, badge: reviewPendingCount || 0 };
         return { ...tab, badge: 0 };
       })
     });
@@ -84,6 +112,11 @@ Page({
 
   selectTab(event) {
     this.setData({ activeTab: event.currentTarget.dataset.key });
+    this.applyFilters();
+  },
+
+  selectReviewSubTab(event) {
+    this.setData({ reviewSubTab: event.currentTarget.dataset.key });
     this.applyFilters();
   },
 
@@ -194,10 +227,14 @@ Page({
   reviewOrder(event) {
     const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
     if (!order) return;
+    const reviewedOrders = getReviewedOrders();
+    const mode = reviewedOrders[order.orderId] ? "detail" : "compose";
     const params = [
+      `mode=${mode}`,
       `title=${encodeURIComponent(order.title || "字书课程")}`,
       `subtitle=${encodeURIComponent(order.subtitle || order.title || "")}`,
       `cover=${encodeURIComponent(order.coverImage || "")}`,
+      `amount=${encodeURIComponent(order.amountText || "")}`,
       `orderId=${encodeURIComponent(order.orderId || "")}`
     ].join("&");
     wx.navigateTo({ url: `/pages/review/index?${params}` });

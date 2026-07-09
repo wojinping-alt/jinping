@@ -96,6 +96,78 @@
   box-sizing: border-box;
 }
 
+.review-center-tabs {
+  height: 86rpx;
+  margin-top: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 52rpx;
+}
+
+.review-center-tab {
+  position: relative;
+  height: 86rpx;
+  color: #666666;
+  font-size: 42rpx;
+  font-weight: 600;
+  line-height: 86rpx;
+}
+
+.review-center-tab.active {
+  color: #222222;
+  font-size: 50rpx;
+  font-weight: 900;
+}
+
+.review-center-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 70rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: #2f80ed;
+}
+
+.review-tip {
+  min-height: 86rpx;
+  margin: 0 -20rpx 22rpx;
+  padding: 14rpx 32rpx;
+  background: #eaf3ff;
+  color: #2380df;
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  box-sizing: border-box;
+}
+
+.tip-icon {
+  width: 34rpx;
+  height: 34rpx;
+  margin-top: 8rpx;
+  border-radius: 50%;
+  background: #2f80ed;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 900;
+  line-height: 34rpx;
+  text-align: center;
+}
+
+.tip-text {
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.tip-close {
+  color: #2f80ed;
+  font-size: 44rpx;
+  line-height: 44rpx;
+}
+
 .state-card,
 .empty {
   margin-top: 28rpx;
@@ -168,6 +240,66 @@
   border-radius: 22rpx;
   background: #ffffff;
   box-shadow: 0 4rpx 18rpx rgba(0, 0, 0, 0.03);
+}
+
+.review-shop {
+  color: #666666;
+  font-size: 38rpx;
+  font-weight: 500;
+}
+
+.review-order-body {
+  margin-top: 26rpx;
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+}
+
+.review-cover {
+  width: 190rpx;
+  height: 170rpx;
+  flex: none;
+  border-radius: 10rpx;
+  background: #eeeeee;
+}
+
+.review-order-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-title {
+  color: #333333;
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-subtitle {
+  margin-top: 18rpx;
+  color: #9a9a9a;
+  font-size: 32rpx;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-button {
+  width: 150rpx;
+  height: 62rpx;
+  border: 3rpx solid #2f80ed;
+  border-radius: 999rpx;
+  color: #2f80ed;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 58rpx;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .order-head {

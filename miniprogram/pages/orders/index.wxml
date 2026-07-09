@@ -24,6 +24,25 @@
     </view>
   </scroll-view>
 
+  <view wx:if="{{activeTab == 'review'}}" class="review-center-tabs">
+    <view
+      class="review-center-tab {{reviewSubTab == 'pending' ? 'active' : ''}}"
+      data-key="pending"
+      bindtap="selectReviewSubTab"
+    >待评价({{reviewCounts.pending}})</view>
+    <view
+      class="review-center-tab {{reviewSubTab == 'evaluated' ? 'active' : ''}}"
+      data-key="evaluated"
+      bindtap="selectReviewSubTab"
+    >已评价</view>
+  </view>
+
+  <view wx:if="{{activeTab == 'review' && reviewSubTab == 'pending'}}" class="review-tip">
+    <view class="tip-icon">!</view>
+    <view class="tip-text">此列表仅展示待评价订单，免费商品可前往课程页评价</view>
+    <view class="tip-close">×</view>
+  </view>
+
   <view wx:if="{{loading}}" class="state-card">加载中...</view>
   <view wx:elif="{{error}}" class="state-card error">{{error}}</view>
   <view wx:elif="{{filteredOrders.length == 0}}" class="empty">
@@ -34,13 +53,22 @@
   </view>
 
   <view wx:else class="order-list">
-    <view
-      wx:for="{{filteredOrders}}"
-      wx:key="id"
-      class="order-card"
-      data-id="{{item.id}}"
-      bindtap="goDetail"
-    >
+    <view wx:for="{{filteredOrders}}" wx:key="id" class="order-card" data-id="{{item.id}}" bindtap="goDetail">
+      <block wx:if="{{activeTab == 'review'}}">
+        <view class="review-shop">字书</view>
+        <view class="review-order-body">
+          <image class="review-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+          <view class="review-order-info">
+            <view class="review-title">{{item.title}}</view>
+            <view class="review-subtitle">{{item.subtitle}}</view>
+          </view>
+          <view class="review-button" data-id="{{item.id}}" catchtap="reviewOrder">
+            {{reviewSubTab == "evaluated" ? "查看" : "评价"}}
+          </view>
+        </view>
+      </block>
+
+      <block wx:else>
       <view class="order-head">
         <view class="shop-name">字书 <text>›</text></view>
         <view class="status {{item.status}}">{{item.statusLabel}}</view>
@@ -77,6 +105,7 @@
         >{{canceling == item.id ? "取消中" : "取消"}}</view>
         <view class="action-btn primary" data-id="{{item.id}}" catchtap="payAgain">{{paying == item.id ? "支付中" : "立即付款"}}</view>
       </view>
+      </block>
     </view>
     <view class="list-end">没有更多了~</view>
   </view>
