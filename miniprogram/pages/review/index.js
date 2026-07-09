@@ -13,6 +13,9 @@ Page({
     score: 0,
     content: "",
     images: [],
+    appendContent: "",
+    appendImages: [],
+    appendTime: "",
     anonymous: false,
     showMenu: false,
     submitting: false
@@ -22,7 +25,8 @@ Page({
     const orderId = decodeURIComponent(options.orderId || "");
     const reviews = wx.getStorageSync("zishooReviews") || {};
     const review = reviews[orderId];
-    const mode = options.mode === "detail" || review ? "detail" : "compose";
+    const mode = options.mode === "append" ? "append" : options.mode === "detail" || review ? "detail" : "compose";
+    const append = review && review.append ? review.append : null;
     this.setData({
       mode,
       orderId,
@@ -35,10 +39,13 @@ Page({
       score: review ? Number(review.score || 0) : 0,
       content: review ? review.content || "" : "",
       images: review ? review.images || [] : [],
+      appendContent: append ? append.content || "" : "",
+      appendImages: append ? append.images || [] : [],
+      appendTime: append ? this.formatTime(append.createdAt) : "",
       anonymous: review ? Boolean(review.anonymous) : false,
       reviewTime: review ? this.formatTime(review.createdAt) : ""
     });
-    wx.setNavigationBarTitle({ title: mode === "detail" ? "评价详情" : "发表评价" });
+    wx.setNavigationBarTitle({ title: mode === "detail" ? "评价详情" : mode === "append" ? "追加评价" : "发表评价" });
   },
 
   formatTime(value) {
@@ -77,6 +84,12 @@ Page({
     wx.previewImage({ urls: this.data.images, current });
   },
 
+  previewAppendImage(event) {
+    const current = this.data.appendImages[Number(event.currentTarget.dataset.index || 0)];
+    if (!current) return;
+    wx.previewImage({ urls: this.data.appendImages, current });
+  },
+
   removeImage(event) {
     const index = Number(event.currentTarget.dataset.index || 0);
     const images = this.data.images.slice();
@@ -91,6 +104,14 @@ Page({
   toggleMenu() {
     this.setData({ showMenu: !this.data.showMenu });
   },
+
+  closeMenu() {
+    if (this.data.showMenu) {
+      this.setData({ showMenu: false });
+    }
+  },
+
+  noop() {},
 
   editReview() {
     this.setData({ mode: "compose", showMenu: false });
@@ -124,29 +145,58 @@ Page({
   },
 
   appendReview() {
-    wx.showToast({ title: "追评功能正在完善", icon: "none" });
+    this.setData({
+      mode: "append",
+      showMenu: false,
+      content: "",
+      images: []
+    });
+    wx.setNavigationBarTitle({ title: "追加评价" });
   },
 
   submitReview() {
-    if (!this.data.score) {
+    if (this.data.mode !== "append" && !this.data.score) {
       wx.showToast({ title: "请先评分", icon: "none" });
       return;
     }
     this.setData({ submitting: true });
     const reviews = wx.getStorageSync("zishooReviews") || {};
-    reviews[this.data.orderId || `${Date.now()}`] = {
-      score: this.data.score,
-      content: this.data.content,
-      images: this.data.images,
-      anonymous: this.data.anonymous,
-      title: this.data.title,
-      subtitle: this.data.subtitle,
-      cover: this.data.cover,
-      amount: this.data.amount,
-      createdAt: Date.now()
-    };
+    const key = this.data.orderId || `${Date.now()}`;
+    if (this.data.mode === "append") {
+      const current = reviews[key] || {
+        score: this.data.score || 5,
+        content: "",
+        images: [],
+        anonymous: this.data.anonymous,
+        title: this.data.title,
+        subtitle: this.data.subtitle,
+        cover: this.data.cover,
+        amount: this.data.amount,
+        createdAt: Date.now()
+      };
+      reviews[key] = {
+        ...current,
+        append: {
+          content: this.data.content,
+          images: this.data.images,
+          createdAt: Date.now()
+        }
+      };
+    } else {
+      reviews[key] = {
+        score: this.data.score,
+        content: this.data.content,
+        images: this.data.images,
+        anonymous: this.data.anonymous,
+        title: this.data.title,
+        subtitle: this.data.subtitle,
+        cover: this.data.cover,
+        amount: this.data.amount,
+        createdAt: Date.now()
+      };
+    }
     wx.setStorageSync("zishooReviews", reviews);
-    wx.showToast({ title: "评价成功" });
+    wx.showToast({ title: this.data.mode === "append" ? "追评成功" : "评价成功" });
     setTimeout(() => {
       this.setData({ submitting: false });
       wx.redirectTo({

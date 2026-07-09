@@ -183,6 +183,35 @@
   font-size: 34rpx;
 }
 
+.append-detail {
+  margin-top: 34rpx;
+  padding-top: 28rpx;
+  border-top: 1rpx solid #eeeeee;
+}
+
+.append-label {
+  color: #666666;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.append-content {
+  margin-top: 14rpx;
+  color: #333333;
+  font-size: 38rpx;
+  line-height: 1.45;
+}
+
+.append-images {
+  margin-top: 18rpx;
+}
+
+.append-time {
+  margin-top: 18rpx;
+  color: #aaaaaa;
+  font-size: 28rpx;
+}
+
 .useful-row {
   margin-top: 36rpx;
   color: #333333;
