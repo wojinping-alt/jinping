@@ -75,9 +75,21 @@
           data-id="{{item.id}}"
           catchtap="cancelOrder"
         >{{canceling == item.id ? "取消中" : "取消"}}</view>
-        <view class="action-btn primary" data-id="{{item.id}}" catchtap="payAgain">立即付款</view>
+        <view class="action-btn primary" data-id="{{item.id}}" catchtap="payAgain">{{paying == item.id ? "支付中" : "立即付款"}}</view>
       </view>
     </view>
     <view class="list-end">没有更多了~</view>
+  </view>
+
+  <view wx:if="{{showCancelConfirm}}" class="cancel-mask" catchtap="closeCancelConfirm">
+    <view class="cancel-dialog" catchtap="noop">
+      <view class="cancel-message">订单还未付款，确定要取消吗？</view>
+      <view class="cancel-actions">
+        <view class="cancel-left" catchtap="confirmCancelOrder">
+          {{canceling == cancelTargetOrder.id ? "取消中" : "取消订单"}}
+        </view>
+        <view class="cancel-right" catchtap="closeCancelConfirm">再考虑下</view>
+      </view>
+    </view>
   </view>
 </view>

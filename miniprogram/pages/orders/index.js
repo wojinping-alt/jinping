@@ -13,6 +13,9 @@ Page({
   data: {
     loading: true,
     canceling: "",
+    paying: "",
+    showCancelConfirm: false,
+    cancelTargetOrder: null,
     error: "",
     keyword: "",
     activeTab: "all",
@@ -101,47 +104,87 @@ Page({
 
   payAgain(event) {
     const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
-    if (order && order.type === "course" && order.courseId) {
-      wx.navigateTo({ url: `/pages/lesson/index?id=${order.courseId}` });
-      return;
-    }
-    if (order && order.type === "product") {
-      wx.navigateTo({ url: "/pages/playearn/index" });
-      return;
-    }
-    wx.showToast({ title: "请回到商品页重新下单", icon: "none" });
+    if (!order) return;
+
+    this.setData({ paying: order.id });
+    request({
+      url: "/api/miniprogram/orders",
+      method: "POST",
+      data: {
+        action: "pay",
+        orderId: order.orderId,
+        type: order.type
+      }
+    })
+      .then((data) => {
+        const payParams = data.payParams;
+        wx.requestPayment({
+          timeStamp: payParams.timeStamp,
+          nonceStr: payParams.nonceStr,
+          package: payParams.package,
+          signType: payParams.signType,
+          paySign: payParams.paySign,
+          success: async () => {
+            wx.showToast({ title: "支付成功" });
+            setTimeout(() => this.loadOrders(), 1200);
+          },
+          fail: (error) => {
+            if (error.errMsg && error.errMsg.includes("cancel")) {
+              wx.showToast({ title: "已取消支付", icon: "none" });
+            } else {
+              wx.showToast({ title: "支付未完成", icon: "none" });
+            }
+          },
+          complete: () => {
+            this.setData({ paying: "" });
+          }
+        });
+      })
+      .catch((error) => {
+        wx.showToast({ title: error.message || "支付失败", icon: "none" });
+        this.setData({ paying: "" });
+      });
   },
 
   cancelOrder(event) {
     const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
     if (!order) return;
-
-    wx.showModal({
-      title: "取消订单",
-      content: "确定取消这笔待付款订单吗？",
-      confirmText: "取消订单",
-      confirmColor: "#333333",
-      success: async (res) => {
-        if (!res.confirm) return;
-        this.setData({ canceling: order.id });
-        try {
-          await request({
-            url: "/api/miniprogram/orders",
-            method: "POST",
-            data: {
-              orderId: order.orderId,
-              type: order.type
-            }
-          });
-          wx.showToast({ title: "已取消" });
-          await this.loadOrders();
-        } catch (error) {
-          wx.showToast({ title: error.message || "取消失败", icon: "none" });
-        } finally {
-          this.setData({ canceling: "" });
-        }
-      }
+    this.setData({
+      showCancelConfirm: true,
+      cancelTargetOrder: order
     });
+  },
+
+  closeCancelConfirm() {
+    this.setData({
+      showCancelConfirm: false,
+      cancelTargetOrder: null
+    });
+  },
+
+  async confirmCancelOrder() {
+    const order = this.data.cancelTargetOrder;
+    if (!order) return;
+
+    this.setData({ canceling: order.id });
+    try {
+      await request({
+        url: "/api/miniprogram/orders",
+        method: "POST",
+        data: {
+          action: "cancel",
+          orderId: order.orderId,
+          type: order.type
+        }
+      });
+      wx.showToast({ title: "已取消" });
+      this.closeCancelConfirm();
+      await this.loadOrders();
+    } catch (error) {
+      wx.showToast({ title: error.message || "取消失败", icon: "none" });
+    } finally {
+      this.setData({ canceling: "" });
+    }
   },
 
   requestAfterSale() {
@@ -151,6 +194,8 @@ Page({
   reviewOrder() {
     wx.showToast({ title: "评价功能正在完善", icon: "none" });
   },
+
+  noop() {},
 
   goHome() {
     wx.redirectTo({ url: "/pages/courses/index" });

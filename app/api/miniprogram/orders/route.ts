@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getPayUser } from "@/lib/pay-auth";
+import { verifyMiniProgramSession } from "@/lib/miniprogram-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
+import {
+  buildNotifyUrl,
+  createJsapiPayParams,
+  createWechatPayOrder,
+} from "@/lib/wechat-pay";
 
 type CourseOrderRow = {
   id: string | number;
@@ -29,6 +35,14 @@ type CourseRow = {
   title: string;
   description?: string | null;
 };
+
+function getClientIp(req: Request) {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "127.0.0.1"
+  );
+}
 
 function getCourseCover(title: string) {
   if (title.includes("Q2") || title.includes("第2季")) return "/assets/xet/q2-cover.jpg";
@@ -206,6 +220,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const orderId = String(body.orderId || "");
   const type = String(body.type || "course");
+  const action = String(body.action || "cancel");
 
   if (!orderId) {
     return NextResponse.json({ error: "缺少订单 ID" }, { status: 400 });
@@ -220,6 +235,107 @@ export async function POST(req: Request) {
   })();
 
   const table = type === "product" ? "product_orders" : "orders";
+
+  if (action === "pay") {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+    const session = token ? verifyMiniProgramSession(token) : null;
+
+    if (!session) {
+      return NextResponse.json({ error: "请先登录小程序" }, { status: 401 });
+    }
+
+    const miniAppId = process.env.WECHAT_MINI_APP_ID || process.env.WECHAT_PAY_APPID;
+
+    if (type === "product") {
+      const { data: order, error } = await db
+        .from("product_orders")
+        .select("id,out_trade_no,product_title,product_type,amount,status")
+        .eq("id", orderId)
+        .eq("user_id", user.id)
+        .maybeSingle<ProductOrderRow>();
+
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      if (!order || order.status !== "pending") {
+        return NextResponse.json({ error: "订单不存在或已不能支付" }, { status: 400 });
+      }
+
+      const amount = Number(order.amount || 0);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return NextResponse.json({ error: "订单金额不正确" }, { status: 400 });
+      }
+
+      const payData = await createWechatPayOrder({
+        description: `${order.product_title || "字书服务商品"}${
+          order.product_type ? `-${order.product_type}` : ""
+        }`.slice(0, 127),
+        outTradeNo: order.out_trade_no || "",
+        amountFen: Math.round(amount * 100),
+        notifyUrl: buildNotifyUrl(req),
+        mode: "jsapi",
+        appid: miniAppId,
+        payerOpenid: session.openid,
+        clientIp: getClientIp(req),
+        userAgent: "miniProgram",
+      });
+
+      if (!payData.prepay_id) {
+        return NextResponse.json({ error: "微信支付没有返回 prepay_id" }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        orderId: order.id,
+        outTradeNo: order.out_trade_no,
+        payParams: createJsapiPayParams(payData.prepay_id, miniAppId),
+      });
+    }
+
+    const { data: order, error } = await db
+      .from("orders")
+      .select("id,out_trade_no,course_id,amount,status")
+      .eq("id", orderId)
+      .eq("user_id", user.id)
+      .maybeSingle<CourseOrderRow>();
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!order || order.status !== "pending") {
+      return NextResponse.json({ error: "订单不存在或已不能支付" }, { status: 400 });
+    }
+
+    const amount = Number(order.amount || 0);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: "订单金额不正确" }, { status: 400 });
+    }
+
+    const { data: course } = await db
+      .from("courses")
+      .select("title")
+      .eq("id", order.course_id)
+      .maybeSingle<{ title: string }>();
+
+    const payData = await createWechatPayOrder({
+      description: `购买课程 ${course?.title || "字书课程"}`.slice(0, 127),
+      outTradeNo: order.out_trade_no || "",
+      amountFen: Math.round(amount * 100),
+      notifyUrl: buildNotifyUrl(req),
+      mode: "jsapi",
+      appid: miniAppId,
+      payerOpenid: session.openid,
+      clientIp: getClientIp(req),
+      userAgent: "miniProgram",
+    });
+
+    if (!payData.prepay_id) {
+      return NextResponse.json({ error: "微信支付没有返回 prepay_id" }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      orderId: order.id,
+      outTradeNo: order.out_trade_no,
+      payParams: createJsapiPayParams(payData.prepay_id, miniAppId),
+    });
+  }
+
   const { data, error } = await db
     .from(table)
     .update({ status: "closed" })

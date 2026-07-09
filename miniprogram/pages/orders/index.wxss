@@ -329,3 +329,62 @@
   font-size: 36rpx;
   text-align: center;
 }
+
+.cancel-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 180rpx;
+  box-sizing: border-box;
+}
+
+.cancel-dialog {
+  width: 650rpx;
+  border-radius: 12rpx;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.cancel-message {
+  min-height: 210rpx;
+  padding: 54rpx 68rpx 42rpx;
+  color: #333333;
+  font-size: 42rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.cancel-actions {
+  height: 96rpx;
+  border-top: 1rpx solid #eeeeee;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cancel-left,
+.cancel-right {
+  height: 96rpx;
+  color: #333333;
+  font-size: 38rpx;
+  font-weight: 500;
+  line-height: 96rpx;
+  text-align: center;
+}
+
+.cancel-left {
+  border-right: 1rpx solid #eeeeee;
+}
+
+.cancel-right {
+  background: #08bf08;
+  color: #ffffff;
+}

@@ -66,11 +66,53 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "课程价格配置错误" }, { status: 400 });
     }
 
+    const miniAppId = process.env.WECHAT_MINI_APP_ID || process.env.WECHAT_PAY_APPID;
+
+    if (!gift) {
+      const { data: pendingOrder, error: pendingOrderError } = await supabase
+        .from("orders")
+        .select("id,out_trade_no,amount")
+        .eq("user_id", user.id)
+        .eq("course_id", course.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (pendingOrderError) {
+        return NextResponse.json({ error: pendingOrderError.message }, { status: 500 });
+      }
+
+      if (pendingOrder?.out_trade_no) {
+        const pendingAmount = Number(pendingOrder.amount || amount);
+        const payData = await createWechatPayOrder({
+          description: `购买课程 ${course.title}`.slice(0, 127),
+          outTradeNo: pendingOrder.out_trade_no,
+          amountFen: Math.round(pendingAmount * 100),
+          notifyUrl: buildNotifyUrl(req),
+          mode: "jsapi",
+          appid: miniAppId,
+          payerOpenid: session.openid,
+          clientIp: getClientIp(req),
+          userAgent: "miniProgram",
+        });
+
+        if (!payData.prepay_id) {
+          return NextResponse.json({ error: "微信支付没有返回 prepay_id" }, { status: 500 });
+        }
+
+        return NextResponse.json({
+          orderId: pendingOrder.id,
+          outTradeNo: pendingOrder.out_trade_no,
+          payParams: createJsapiPayParams(payData.prepay_id, miniAppId),
+        });
+      }
+    }
+
     const outTradeNo = `${gift ? "MPGIFT" : "MP"}${Date.now()}${Math.random()
       .toString(36)
       .slice(2, 8)
       .toUpperCase()}`;
-    const miniAppId = process.env.WECHAT_MINI_APP_ID || process.env.WECHAT_PAY_APPID;
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
