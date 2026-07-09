@@ -84,8 +84,35 @@ Page({
         String(order.title || "").toLowerCase().includes(keyword) ||
         String(order.outTradeNo || "").toLowerCase().includes(keyword);
       return statusMatched && keywordMatched;
+    }).map((order) => {
+      const review = reviewedOrders[order.orderId] || null;
+      return {
+        ...order,
+        review,
+        reviewContent: review ? review.content : "",
+        reviewScore: review ? Number(review.score || 0) : 0,
+        reviewStars: [1, 2, 3, 4, 5],
+        reviewTimeText: review ? this.formatReviewTime(review.createdAt) : "",
+        reviewUserName: review && review.anonymous ? "匿名用户" : "字书用户",
+        reviewAvatar: review && !review.anonymous ? wx.getStorageSync("zishooAvatarUrl") || "" : ""
+      };
     });
     this.setData({ filteredOrders });
+  },
+
+  formatReviewTime(value) {
+    const date = value ? new Date(value) : new Date();
+    if (Number.isNaN(date.getTime())) return "";
+    const pad = (num) => String(num).padStart(2, "0");
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate())
+    ].join("-") + " " + [
+      pad(date.getHours()),
+      pad(date.getMinutes()),
+      pad(date.getSeconds())
+    ].join(":");
   },
 
   updateTabs() {
@@ -126,6 +153,7 @@ Page({
   },
 
   goDetail(event) {
+    if (this.data.activeTab === "review") return;
     const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
     if (!order) return;
     if (order.type === "course" && order.courseId) {

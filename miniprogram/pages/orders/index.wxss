@@ -302,6 +302,150 @@
   box-sizing: border-box;
 }
 
+.evaluated-review-card {
+  padding: 4rpx 0 0;
+}
+
+.evaluated-user-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.evaluated-avatar {
+  width: 74rpx;
+  height: 74rpx;
+  flex: none;
+  border-radius: 50%;
+  background: #f5f1e8;
+}
+
+.evaluated-avatar.fallback {
+  color: #d2a300;
+  font-size: 40rpx;
+  font-weight: 900;
+  line-height: 74rpx;
+  text-align: center;
+}
+
+.evaluated-user-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.evaluated-user-name {
+  color: #333333;
+  font-size: 38rpx;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.evaluated-stars {
+  margin-top: 6rpx;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.evaluated-star {
+  color: #eeeeee;
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.evaluated-star.active {
+  color: #ff7a1a;
+}
+
+.evaluated-more {
+  width: 40rpx;
+  color: #9a9a9a;
+  font-size: 46rpx;
+  line-height: 46rpx;
+  text-align: right;
+}
+
+.evaluated-content {
+  margin-top: 28rpx;
+  color: #333333;
+  font-size: 42rpx;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.evaluated-meta {
+  margin-top: 28rpx;
+  color: #999999;
+  font-size: 32rpx;
+  line-height: 1.35;
+}
+
+.evaluated-product {
+  margin-top: 26rpx;
+  padding: 14rpx;
+  background: #f6f6f6;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.evaluated-product-cover {
+  width: 128rpx;
+  height: 82rpx;
+  flex: none;
+  background: #eeeeee;
+}
+
+.evaluated-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.evaluated-product-title {
+  color: #333333;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evaluated-product-subtitle {
+  margin-top: 6rpx;
+  color: #999999;
+  font-size: 28rpx;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evaluated-footer {
+  margin-top: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.useful {
+  color: #333333;
+  font-size: 34rpx;
+}
+
+.append-review-button {
+  width: 150rpx;
+  height: 62rpx;
+  border: 3rpx solid #2f80ed;
+  border-radius: 999rpx;
+  color: #2f80ed;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 58rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
 .order-head {
   display: flex;
   align-items: center;
