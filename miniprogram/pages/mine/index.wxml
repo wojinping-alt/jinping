@@ -33,7 +33,7 @@
   <view class="panel">
     <view class="panel-head">
       <view class="panel-title">订单</view>
-      <view class="panel-link">查看全部订单 ›</view>
+      <view class="panel-link" bindtap="goOrders">查看全部订单 ›</view>
     </view>
     <view class="order-grid">
       <view
@@ -41,6 +41,7 @@
         wx:key="label"
         class="order-item"
         bindtap="tapOrder"
+        data-status="{{item.status}}"
       >
         <view class="order-icon {{item.icon}}">
           <view wx:if="{{item.badge}}" class="badge">{{item.badge}}</view>

@@ -12,11 +12,11 @@ Page({
       learningMinutes: 0
     },
     orderItems: [
-      { label: "待付款", icon: "wallet" },
-      { label: "待发货", icon: "box" },
-      { label: "待收货", icon: "truck" },
-      { label: "待评价", icon: "chat", badge: 7 },
-      { label: "退款/售后", icon: "refund" }
+      { label: "待付款", icon: "wallet", status: "pending" },
+      { label: "待发货", icon: "box", status: "shipping" },
+      { label: "待收货", icon: "truck", status: "receiving" },
+      { label: "待评价", icon: "chat", status: "review", badge: 7 },
+      { label: "退款/售后", icon: "refund", status: "refund" }
     ],
     toolItems: [
       { label: "我的课程", target: "owned" },
@@ -55,6 +55,11 @@ Page({
     wx.redirectTo({ url: "/pages/owned/index" });
   },
 
+  goOrders(event) {
+    const status = event && event.currentTarget ? event.currentTarget.dataset.status : "";
+    wx.navigateTo({ url: `/pages/orders/index${status ? `?status=${status}` : ""}` });
+  },
+
   goHome() {
     wx.redirectTo({ url: "/pages/courses/index" });
   },
@@ -72,7 +77,7 @@ Page({
     wx.showToast({ title: "该功能正在完善", icon: "none" });
   },
 
-  tapOrder() {
-    wx.showToast({ title: "订单功能正在完善", icon: "none" });
+  tapOrder(event) {
+    this.goOrders(event);
   }
 });
