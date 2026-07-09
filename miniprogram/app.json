@@ -6,7 +6,8 @@
     "pages/playearn/index",
     "pages/owned/index",
     "pages/mine/index",
-    "pages/orders/index"
+    "pages/orders/index",
+    "pages/review/index"
   ],
   "window": {
     "navigationBarTitleText": "字书",

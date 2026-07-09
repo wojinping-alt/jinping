@@ -67,7 +67,7 @@
 
       <view wx:if="{{item.status == 'paid'}}" class="order-actions">
         <view class="action-btn" catchtap="requestAfterSale">申请售后</view>
-        <view class="action-btn primary" catchtap="reviewOrder">评价</view>
+        <view class="action-btn primary" data-id="{{item.id}}" catchtap="reviewOrder">评价</view>
       </view>
       <view wx:elif="{{item.status == 'pending'}}" class="order-actions">
         <view

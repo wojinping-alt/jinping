@@ -4,6 +4,7 @@ Page({
   data: {
     loading: true,
     userName: "字书用户",
+    avatarUrl: "",
     stats: {
       account: 0,
       coupons: 0,
@@ -42,6 +43,7 @@ Page({
       const data = await request({ url: "/api/miniprogram/my" });
       this.setData({
         userName: (data.user && data.user.name) || "字书用户",
+        avatarUrl: wx.getStorageSync("zishooAvatarUrl") || "",
         stats: data.stats || this.data.stats,
         loading: false
       });
@@ -66,6 +68,17 @@ Page({
 
   tapPromo() {
     wx.showToast({ title: "推广功能正在完善", icon: "none" });
+  },
+
+  chooseAvatar(event) {
+    const avatarUrl = event.detail && event.detail.avatarUrl;
+    if (!avatarUrl) return;
+    wx.setStorageSync("zishooAvatarUrl", avatarUrl);
+    this.setData({ avatarUrl });
+  },
+
+  tapHeaderIcon() {
+    wx.showToast({ title: "功能正在完善", icon: "none" });
   },
 
   tapTool(event) {

@@ -191,8 +191,16 @@ Page({
     wx.showToast({ title: "售后功能正在完善", icon: "none" });
   },
 
-  reviewOrder() {
-    wx.showToast({ title: "评价功能正在完善", icon: "none" });
+  reviewOrder(event) {
+    const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
+    if (!order) return;
+    const params = [
+      `title=${encodeURIComponent(order.title || "字书课程")}`,
+      `subtitle=${encodeURIComponent(order.subtitle || order.title || "")}`,
+      `cover=${encodeURIComponent(order.coverImage || "")}`,
+      `orderId=${encodeURIComponent(order.orderId || "")}`
+    ].join("&");
+    wx.navigateTo({ url: `/pages/review/index?${params}` });
   },
 
   noop() {},

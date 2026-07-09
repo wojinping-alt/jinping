@@ -1,8 +1,14 @@
 <view class="mine-page">
   <view class="profile">
-    <view class="avatar">字</view>
+    <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="chooseAvatar">
+      <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
+      <view wx:else class="avatar-fallback"></view>
+    </button>
     <view class="profile-name">{{userName}}</view>
     <view class="refresh-icon"></view>
+    <view class="profile-spacer"></view>
+    <view class="header-icon gear" bindtap="tapHeaderIcon"></view>
+    <view class="header-icon message" bindtap="tapHeaderIcon"></view>
   </view>
 
   <view class="stats-card">
