@@ -5,6 +5,10 @@
   color: #222222;
 }
 
+.lesson-page-unlocked {
+  padding-bottom: 0;
+}
+
 .state {
   margin: 26rpx;
   padding: 40rpx;

@@ -1,4 +1,4 @@
-<view class="lesson-page">
+<view class="lesson-page {{unlocked ? 'lesson-page-unlocked' : ''}}">
   <view wx:if="{{loading}}" class="state card">加载中...</view>
   <view wx:elif="{{error}}" class="state card error">{{error}}</view>
 
@@ -80,20 +80,14 @@
       </view>
     </view>
 
-    <view class="buy-bar">
+    <view wx:if="{{!unlocked}}" class="buy-bar">
       <view class="buy-price">
         <view class="price">¥ {{course.priceText}}</view>
-        <view class="price-note">{{unlocked ? "已解锁，可观看全部内容" : "一次购买，观看本合集全部课程"}}</view>
+        <view class="price-note">一次购买，观看本合集全部课程</view>
       </view>
-      <button
-        wx:if="{{!unlocked}}"
-        class="buy-button"
-        loading="{{paying}}"
-        bindtap="buyCourse"
-      >
+      <button class="buy-button" loading="{{paying}}" bindtap="buyCourse">
         购买合集
       </button>
-      <view wx:else class="unlocked" bindtap="startLearning">开始学习</view>
     </view>
 
     <view wx:if="{{showPoster}}" class="modal-mask" bindtap="closePoster">
