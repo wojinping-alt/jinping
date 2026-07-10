@@ -1,5 +1,7 @@
 const { request } = require("../../utils/request");
 
+const COURSE_CACHE_KEY = "zishooHomeCoursesCache";
+
 const bannerItems = [
   { image: "/assets/xet/banner-1.jpg" },
   { image: "/assets/xet/banner-2.jpg" }
@@ -43,6 +45,31 @@ function getCoverImage(title) {
   return "/assets/xet/goods-pack.jpg";
 }
 
+function buildCourseState(rawCourses) {
+  const courses = (rawCourses || []).map((course, index) => {
+    const price = Number(course.price || 0);
+    const title = course.title || "";
+    const coverImage = getCoverImage(title);
+    return {
+      ...course,
+      index,
+      priceText: price.toFixed(2),
+      coverImage,
+      shortTitle: title.replace("《", "").replace("》", "")
+    };
+  });
+  const qCourses = courses.filter((course) => course.title.includes("一字千金"));
+  const simpleCourse = courses.find((course) => course.title.includes("汉字就这么简单")) || null;
+  const totalEpisodes = courses.reduce((sum, course) => sum + Number(course.episodeCount || 0), 0);
+  return {
+    courses,
+    qCourses,
+    simpleCourse,
+    featuredCourse: qCourses[0] || courses[0] || null,
+    totalEpisodes
+  };
+}
+
 Page({
   data: {
     loading: true,
@@ -64,9 +91,23 @@ Page({
     adPlaybackRateText: "1.0x"
   },
 
+  onLoad() {
+    this.restoreCourseCache();
+  },
+
   onShow() {
     this.loadVideoAds();
     this.loadCourses();
+  },
+
+  restoreCourseCache() {
+    const cached = wx.getStorageSync(COURSE_CACHE_KEY);
+    if (!cached || !Array.isArray(cached.courses) || !cached.courses.length) return;
+    this.setData({
+      ...cached,
+      loading: false,
+      error: ""
+    });
   },
 
   async loadVideoAds() {
@@ -85,27 +126,10 @@ Page({
     this.setData({ loading: !hasCourses, error: "" });
     try {
       const data = await request({ url: "/api/miniprogram/courses" });
-      const courses = (data.courses || []).map((course, index) => {
-        const price = Number(course.price || 0);
-        const title = course.title || "";
-        const coverImage = getCoverImage(title);
-        return {
-          ...course,
-          index,
-          priceText: price.toFixed(2),
-          coverImage,
-          shortTitle: title.replace("《", "").replace("》", "")
-        };
-      });
-      const qCourses = courses.filter((course) => course.title.includes("一字千金"));
-      const simpleCourse = courses.find((course) => course.title.includes("汉字就这么简单")) || null;
-      const totalEpisodes = courses.reduce((sum, course) => sum + Number(course.episodeCount || 0), 0);
+      const courseState = buildCourseState(data.courses || []);
+      wx.setStorageSync(COURSE_CACHE_KEY, courseState);
       this.setData({
-        courses,
-        qCourses,
-        simpleCourse,
-        featuredCourse: qCourses[0] || courses[0] || null,
-        totalEpisodes,
+        ...courseState,
         loading: false
       });
     } catch (error) {
