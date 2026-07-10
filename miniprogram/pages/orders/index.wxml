@@ -88,6 +88,20 @@
           </view>
           <view class="evaluated-content">{{item.reviewContent || "这个课程很有帮助"}}</view>
           <view class="evaluated-meta">{{item.reviewTimeText}} 广东省，</view>
+          <view wx:if="{{item.appendContent || item.appendImages.length}}" class="evaluated-append">
+            <view class="evaluated-append-title">{{item.appendDelayText}}</view>
+            <view wx:if="{{item.appendContent}}" class="evaluated-append-content">{{item.appendContent}}</view>
+            <view wx:if="{{item.appendImages.length}}" class="evaluated-append-images">
+              <image
+                wx:for="{{item.appendImages}}"
+                wx:for-item="appendImage"
+                wx:key="*this"
+                class="evaluated-append-image"
+                src="{{appendImage}}"
+                mode="aspectFill"
+              ></image>
+            </view>
+          </view>
           <view class="evaluated-product">
             <image class="evaluated-product-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
             <view class="evaluated-product-info">
@@ -97,7 +111,7 @@
           </view>
           <view class="evaluated-footer">
             <view class="useful">♡ 有用</view>
-            <view class="append-review-button">追评</view>
+            <view class="append-review-button" data-id="{{item.id}}" catchtap="appendReviewFromOrder">追评</view>
           </view>
         </view>
       </block>

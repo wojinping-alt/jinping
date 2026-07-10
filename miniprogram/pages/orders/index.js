@@ -86,6 +86,7 @@ Page({
       return statusMatched && keywordMatched;
     }).map((order) => {
       const review = reviewedOrders[order.orderId] || null;
+      const append = review && review.append ? review.append : null;
       return {
         ...order,
         review,
@@ -93,6 +94,9 @@ Page({
         reviewScore: review ? Number(review.score || 0) : 0,
         reviewStars: [1, 2, 3, 4, 5],
         reviewTimeText: review ? this.formatReviewTime(review.createdAt) : "",
+        appendContent: append ? append.content || "" : "",
+        appendImages: append ? append.images || [] : [],
+        appendDelayText: append ? this.formatAppendDelay(review.createdAt, append.createdAt) : "",
         reviewUserName: review && review.anonymous ? "匿名用户" : "字书用户",
         reviewAvatar: review && !review.anonymous ? wx.getStorageSync("zishooAvatarUrl") || "" : ""
       };
@@ -113,6 +117,14 @@ Page({
       pad(date.getMinutes()),
       pad(date.getSeconds())
     ].join(":");
+  },
+
+  formatAppendDelay(reviewTime, appendTime) {
+    const start = new Date(reviewTime || Date.now()).getTime();
+    const end = new Date(appendTime || Date.now()).getTime();
+    if (Number.isNaN(start) || Number.isNaN(end)) return "用户1天后追评";
+    const days = Math.max(1, Math.ceil((end - start) / 86400000));
+    return `用户${days}天后追评`;
   },
 
   updateTabs() {
@@ -259,6 +271,20 @@ Page({
     const mode = reviewedOrders[order.orderId] ? "detail" : "compose";
     const params = [
       `mode=${mode}`,
+      `title=${encodeURIComponent(order.title || "字书课程")}`,
+      `subtitle=${encodeURIComponent(order.subtitle || order.title || "")}`,
+      `cover=${encodeURIComponent(order.coverImage || "")}`,
+      `amount=${encodeURIComponent(order.amountText || "")}`,
+      `orderId=${encodeURIComponent(order.orderId || "")}`
+    ].join("&");
+    wx.navigateTo({ url: `/pages/review/index?${params}` });
+  },
+
+  appendReviewFromOrder(event) {
+    const order = this.data.orders.find((item) => item.id === event.currentTarget.dataset.id);
+    if (!order) return;
+    const params = [
+      "mode=append",
       `title=${encodeURIComponent(order.title || "字书课程")}`,
       `subtitle=${encodeURIComponent(order.subtitle || order.title || "")}`,
       `cover=${encodeURIComponent(order.coverImage || "")}`,
