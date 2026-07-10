@@ -2,12 +2,12 @@
   <view class="profile">
     <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="chooseAvatar">
       <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
-      <view wx:else class="avatar-fallback"></view>
+      <view wx:else class="avatar-fallback">字</view>
     </button>
     <view class="profile-name">{{userName}}</view>
     <view class="refresh-icon"></view>
     <view class="profile-spacer"></view>
-    <view class="header-icon gear" bindtap="tapHeaderIcon"></view>
+    <view class="header-icon gear" bindtap="openSettings"></view>
     <view class="header-icon message" bindtap="tapHeaderIcon"></view>
   </view>
 
@@ -87,6 +87,22 @@
     <view class="tab active">
       <view class="tab-icon mine-icon"></view>
       <view class="tab-text">我的</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showLoginPanel}}" class="auth-mask" bindtap="hideLoginPanel">
+    <view class="auth-sheet" catchtap="stopBubble">
+      <view class="auth-title">为给您提供更好的服务</view>
+      <view class="auth-text">
+        深圳字书科技有限公司将通过
+        <text data-type="service" bindtap="openProtocol">《字书服务协议》</text>、
+        <text data-type="privacy" bindtap="openProtocol">《字书个人信息保护政策》</text>
+        和
+        <text data-type="merchant" bindtap="openProtocol">《商家隐私声明》</text>
+        帮助您了解我们收集、使用、存储和共享个人信息的情况。
+      </view>
+      <button class="auth-confirm" loading="{{loginLoading}}" bindtap="loginAndLoad">同意并继续</button>
+      <view class="auth-cancel" bindtap="hideLoginPanel">取消</view>
     </view>
   </view>
 </view>

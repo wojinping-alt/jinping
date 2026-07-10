@@ -35,9 +35,15 @@
 }
 
 .avatar-fallback {
-  background: linear-gradient(90deg, #0f6893 0%, #263a90 46%, #c9242d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
   border: 2rpx solid rgba(255, 255, 255, 0.9);
   box-sizing: border-box;
+  color: #d2a600;
+  font-size: 54rpx;
+  font-weight: 900;
 }
 
 .profile-name {
@@ -465,4 +471,63 @@
   margin-top: 8rpx;
   font-size: 28rpx;
   font-weight: 600;
+}
+
+.auth-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.auth-sheet {
+  width: 100%;
+  padding: 58rpx 48rpx 42rpx;
+  border-radius: 28rpx 28rpx 0 0;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.auth-title {
+  color: #111111;
+  font-size: 42rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.auth-text {
+  margin-top: 30rpx;
+  color: #222222;
+  font-size: 32rpx;
+  line-height: 1.85;
+}
+
+.auth-text text {
+  color: #1976d2;
+}
+
+.auth-confirm {
+  margin-top: 44rpx;
+  height: 86rpx;
+  border-radius: 999rpx;
+  background: #06c160;
+  color: #ffffff;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 86rpx;
+}
+
+.auth-confirm::after {
+  border: 0;
+}
+
+.auth-cancel {
+  height: 78rpx;
+  margin-top: 18rpx;
+  color: #333333;
+  font-size: 32rpx;
+  line-height: 78rpx;
+  text-align: center;
 }

@@ -1,0 +1,7 @@
+<view class="protocol-page">
+  <view class="title">{{title}}</view>
+  <view class="company">深圳字书科技有限公司</view>
+  <view class="content">
+    <view wx:for="{{paragraphs}}" wx:key="*this" class="paragraph">{{item}}</view>
+  </view>
+</view>

@@ -1,4 +1,4 @@
-const { request } = require("../../utils/request");
+const { request, isLoggedIn } = require("../../utils/request");
 
 const COURSE_CACHE_KEY = "zishooHomeCoursesCache";
 
@@ -228,7 +228,7 @@ Page({
     }
 
     if (tab === "mine") {
-      wx.navigateTo({ url: "/pages/mine/index" });
+      wx.navigateTo({ url: `/pages/mine/index${isLoggedIn() ? "" : "?login=1"}` });
       return;
     }
 

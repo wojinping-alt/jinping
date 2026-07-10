@@ -242,7 +242,7 @@ Page({
 
   async claimGift(giftCode) {
     try {
-      await ensureLogin();
+      await ensureLogin({ withProfile: false, skipConsent: true });
       const data = await request({
         url: "/api/miniprogram/gift/claim",
         method: "POST",

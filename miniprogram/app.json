@@ -6,6 +6,8 @@
     "pages/playearn/index",
     "pages/owned/index",
     "pages/mine/index",
+    "pages/settings/index",
+    "pages/protocol/index",
     "pages/orders/index",
     "pages/review/index"
   ],

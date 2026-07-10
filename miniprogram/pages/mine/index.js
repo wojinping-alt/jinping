@@ -1,4 +1,11 @@
-const { request, ensureLogin } = require("../../utils/request");
+const {
+  request,
+  ensureLogin,
+  isLoggedIn,
+  getStoredUserProfile,
+  saveUserProfile,
+  acceptAgreement
+} = require("../../utils/request");
 
 const baseOrderItems = [
   { label: "待付款", icon: "wallet", status: "pending" },
@@ -11,6 +18,9 @@ const baseOrderItems = [
 Page({
   data: {
     loading: true,
+    loginLoading: false,
+    loggedIn: false,
+    showLoginPanel: false,
     userName: "字书用户",
     avatarUrl: "",
     stats: {
@@ -35,20 +45,83 @@ Page({
     ]
   },
 
+  onLoad(options) {
+    if (options && options.login) {
+      this.setData({ showLoginPanel: true });
+    }
+  },
+
   onShow() {
+    wx.setNavigationBarTitle({ title: "我的" });
+    this.syncStoredProfile();
+    if (!isLoggedIn()) {
+      this.setData({
+        loggedIn: false,
+        loading: false,
+        showLoginPanel: true,
+        stats: {
+          ...this.data.stats,
+          account: 0,
+          coupons: 0,
+          owned: 0,
+          learningMinutes: 0
+        },
+        orderItems: baseOrderItems
+      });
+      return;
+    }
     this.loadMine();
+  },
+
+  syncStoredProfile() {
+    const profile = getStoredUserProfile();
+    this.setData({
+      userName: profile.nickName || "字书用户",
+      avatarUrl: profile.avatarUrl || ""
+    });
+  },
+
+  async loginAndLoad() {
+    if (this.data.loginLoading) return;
+    this.setData({ loginLoading: true });
+    try {
+      acceptAgreement();
+      await ensureLogin({ skipConsent: true, withProfile: true });
+      this.setData({
+        loginLoading: false,
+        loggedIn: true,
+        showLoginPanel: false,
+        loading: true
+      });
+      this.syncStoredProfile();
+      await this.loadMine();
+    } catch (error) {
+      this.setData({ loginLoading: false });
+      wx.showToast({ title: error.message || "登录已取消", icon: "none" });
+    }
+  },
+
+  hideLoginPanel() {
+    this.setData({ showLoginPanel: false });
+  },
+
+  requireLoggedIn() {
+    if (isLoggedIn()) return true;
+    this.setData({ showLoginPanel: true });
+    return false;
   },
 
   async loadMine() {
     try {
-      await ensureLogin();
       const [data, orderData] = await Promise.all([
         request({ url: "/api/miniprogram/my" }),
         request({ url: "/api/miniprogram/orders" }).catch(() => ({ orders: [] }))
       ]);
+      const profile = getStoredUserProfile();
       this.setData({
-        userName: (data.user && data.user.name) || "字书用户",
-        avatarUrl: wx.getStorageSync("zishooAvatarUrl") || "",
+        loggedIn: true,
+        userName: profile.nickName || (data.user && data.user.name) || "字书用户",
+        avatarUrl: profile.avatarUrl || "",
         stats: data.stats || this.data.stats,
         orderItems: this.buildOrderItems(orderData.orders || []),
         loading: false
@@ -64,17 +137,19 @@ Page({
       pending: orders.filter((order) => order.status === "pending").length,
       shipping: orders.filter((order) => order.type === "product" && order.status === "paid").length,
       receiving: 0,
-      review: orders.filter((order) => order.status === "paid").length,
+      review: orders.filter((order) => order.status === "paid" && !order.reviewed).length,
       refund: orders.filter((order) => order.status === "refund").length
     };
     return baseOrderItems.map((item) => ({ ...item, badge: counts[item.status] || 0 }));
   },
 
   goOwned() {
+    if (!this.requireLoggedIn()) return;
     wx.redirectTo({ url: "/pages/owned/index" });
   },
 
   goOrders(event) {
+    if (!this.requireLoggedIn()) return;
     const status = event && event.currentTarget ? event.currentTarget.dataset.status : "";
     wx.navigateTo({ url: `/pages/orders/index${status ? `?status=${status}` : ""}` });
   },
@@ -90,15 +165,22 @@ Page({
   chooseAvatar(event) {
     const avatarUrl = event.detail && event.detail.avatarUrl;
     if (!avatarUrl) return;
-    wx.setStorageSync("zishooAvatarUrl", avatarUrl);
+    const profile = getStoredUserProfile();
+    saveUserProfile({ ...profile, avatarUrl });
     this.setData({ avatarUrl });
   },
 
+  openSettings() {
+    if (!this.requireLoggedIn()) return;
+    wx.navigateTo({ url: "/pages/settings/index" });
+  },
+
   tapHeaderIcon() {
-    wx.showToast({ title: "功能正在完善", icon: "none" });
+    wx.showToast({ title: "消息功能正在完善", icon: "none" });
   },
 
   tapTool(event) {
+    if (!this.requireLoggedIn()) return;
     const target = event.currentTarget.dataset.target;
     if (target === "owned") {
       this.goOwned();
@@ -109,5 +191,13 @@ Page({
 
   tapOrder(event) {
     this.goOrders(event);
+  },
+
+  openProtocol(event) {
+    const type = event.currentTarget.dataset.type;
+    wx.navigateTo({ url: `/pages/protocol/index?type=${type}` });
+  },
+
+  stopBubble() {
   }
 });

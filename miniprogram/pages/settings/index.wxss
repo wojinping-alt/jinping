@@ -1,0 +1,79 @@
+.settings-page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  color: #333333;
+}
+
+.profile-row,
+.row {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.profile-row {
+  height: 136rpx;
+  padding: 0 34rpx;
+  gap: 24rpx;
+}
+
+.avatar {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+}
+
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d2a600;
+  background: #ffffff;
+  border: 1rpx solid #eeeeee;
+  font-size: 46rpx;
+  font-weight: 900;
+}
+
+.name {
+  flex: 1;
+  color: #333333;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.group {
+  margin-top: 18rpx;
+  background: #ffffff;
+}
+
+.row {
+  height: 112rpx;
+  padding: 0 34rpx;
+  justify-content: space-between;
+  border-bottom: 1rpx solid #eeeeee;
+  font-size: 36rpx;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.arrow {
+  color: #a8a8a8;
+  font-size: 58rpx;
+  font-weight: 300;
+}
+
+.logout {
+  height: 110rpx;
+  margin-top: 46rpx;
+  border-radius: 0;
+  background: #ffffff;
+  color: #f05b78;
+  font-size: 36rpx;
+  line-height: 110rpx;
+}
+
+.logout::after {
+  border: 0;
+}

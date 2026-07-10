@@ -1,0 +1,40 @@
+<view class="settings-page">
+  <view class="profile-row">
+    <image wx:if="{{avatarUrl}}" class="avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+    <view wx:else class="avatar fallback">字</view>
+    <view class="name">{{userName}}</view>
+    <view class="arrow">›</view>
+  </view>
+
+  <view class="group">
+    <view class="row" bindtap="tapRow" data-type="account">
+      <view>账号与安全</view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="row" bindtap="tapRow" data-type="care">
+      <view>关怀模式</view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="row" bindtap="tapRow" data-type="teen">
+      <view>青少年模式</view>
+      <view class="arrow">›</view>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="row" bindtap="tapRow" data-type="service">
+      <view>字书服务协议</view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="row" bindtap="tapRow" data-type="privacy">
+      <view>字书个人信息保护政策</view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="row" bindtap="tapRow" data-type="merchant">
+      <view>商家隐私声明</view>
+      <view class="arrow">›</view>
+    </view>
+  </view>
+
+  <button class="logout" bindtap="logout">退出登录</button>
+</view>
