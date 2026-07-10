@@ -139,7 +139,7 @@ Page({
           coverAsset: getHeroCover(courseKind, course.title || ""),
           priceText: Number(course.price || 0).toFixed(2),
           coverImage: getCoverImage(course.title || ""),
-          subscriberCount: episodeCount || 22
+          subscriberCount: Number(course.subscriberCount || 0)
         },
         episodes: (data.episodes || []).map((episode) => ({
           ...episode,
@@ -414,6 +414,10 @@ Page({
   copyShareLink() {
     const link = `${app.globalData.apiBase}/lesson/${this.data.courseId}?ref=${encodeURIComponent(this.getShareRef())}`;
     wx.setClipboardData({ data: link });
+  },
+
+  goHome() {
+    wx.reLaunch({ url: "/pages/courses/index" });
   },
 
   selectTab(event) {

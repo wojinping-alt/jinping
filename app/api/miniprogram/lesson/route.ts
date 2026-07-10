@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPayUser } from "@/lib/pay-auth";
+import { createAdminClient } from "@/lib/supabase-admin";
 
 type Course = {
   id: string;
@@ -13,6 +14,10 @@ type Episode = {
   course_id: string;
   episode_number: number;
   title: string;
+};
+
+type SubscriberRow = {
+  user_id: string | null;
 };
 
 async function hasCourseAccess(
@@ -53,8 +58,15 @@ export async function GET(req: Request) {
   }
 
   const { supabase, user } = await getPayUser(req);
+  const db = (() => {
+    try {
+      return createAdminClient();
+    } catch {
+      return supabase;
+    }
+  })();
 
-  const { data: course, error: courseError } = await supabase
+  const { data: course, error: courseError } = await db
     .from("courses")
     .select("id,title,description,price")
     .eq("id", courseId)
@@ -67,7 +79,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const { data: episodes, error: episodeError } = await supabase
+  const { data: episodes, error: episodeError } = await db
     .from("course_episodes")
     .select("id,course_id,episode_number,title")
     .eq("course_id", courseId)
@@ -79,10 +91,31 @@ export async function GET(req: Request) {
   }
 
   const unlocked = await hasCourseAccess(
-    supabase,
+    db,
     courseId,
     user?.id,
     Number(course.price)
+  );
+
+  const [{ data: userCourses }, { data: paidOrders }] = await Promise.all([
+    db
+      .from("user_courses")
+      .select("user_id")
+      .eq("course_id", courseId)
+      .returns<SubscriberRow[]>(),
+    db
+      .from("orders")
+      .select("user_id")
+      .eq("course_id", courseId)
+      .eq("status", "paid")
+      .returns<SubscriberRow[]>(),
+  ]);
+
+  const subscriberIds = new Set(
+    [...(userCourses || []), ...(paidOrders || [])]
+      .map((row) => row.user_id)
+      .filter(Boolean)
+      .map(String)
   );
 
   return NextResponse.json({
@@ -90,6 +123,7 @@ export async function GET(req: Request) {
       ...course,
       id: String(course.id),
       price: Number(course.price),
+      subscriberCount: subscriberIds.size,
     },
     episodes: episodes || [],
     loggedIn: Boolean(user),

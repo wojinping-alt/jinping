@@ -54,6 +54,7 @@ function buildCourseState(rawCourses) {
       ...course,
       index,
       priceText: price.toFixed(2),
+      subscriberCount: Number(course.subscriberCount || 0),
       coverImage,
       shortTitle: title.replace("《", "").replace("》", "")
     };

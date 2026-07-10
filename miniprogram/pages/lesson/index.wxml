@@ -4,8 +4,8 @@
 
   <block wx:else>
     <view class="shop-top">
-      <view class="shop-logo">字</view>
-      <view class="shop-name">字书</view>
+      <view class="shop-logo" bindtap="goHome">字</view>
+      <view class="shop-name" bindtap="goHome">字书</view>
       <view class="shop-spacer"></view>
       <view class="search-mini"></view>
       <view class="user-link">个人中心</view>

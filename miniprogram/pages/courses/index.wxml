@@ -105,7 +105,7 @@
           <view class="course-desc">文字的 文化的 艺术的 一课三得</view>
           <view class="course-meta">
             <view class="course-price">¥ {{item.priceText}}</view>
-            <view class="course-count">{{item.episodeCount}} 人订阅</view>
+            <view class="course-count">{{item.subscriberCount}} 人订阅</view>
           </view>
         </view>
       </view>
