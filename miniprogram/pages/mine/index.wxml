@@ -92,6 +92,27 @@
 
   <view wx:if="{{showLoginPanel}}" class="auth-mask" bindtap="hideLoginPanel">
     <view class="auth-sheet" catchtap="stopBubble">
+      <view class="auth-app-row">
+        <view class="auth-logo">字</view>
+        <view class="auth-app-text">
+          <view class="auth-app-name">字书科技 申请</view>
+          <view class="auth-app-subtitle">你的昵称、头像</view>
+        </view>
+      </view>
+      <view class="auth-profile-row">
+        <button class="auth-avatar-button" open-type="chooseAvatar" bindchooseavatar="chooseAuthAvatar">
+          <image wx:if="{{authAvatarUrl}}" class="auth-avatar" src="{{authAvatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="auth-avatar auth-avatar-empty"></view>
+        </button>
+        <input
+          class="auth-nickname"
+          type="nickname"
+          placeholder="使用微信昵称"
+          value="{{authNickname}}"
+          bindinput="inputAuthNickname"
+        />
+        <view class="auth-check">✓</view>
+      </view>
       <view class="auth-title">为给您提供更好的服务</view>
       <view class="auth-text">
         深圳字书科技有限公司将通过

@@ -23,6 +23,8 @@ Page({
     showLoginPanel: false,
     userName: "字书用户",
     avatarUrl: "",
+    authNickname: "",
+    authAvatarUrl: "",
     stats: {
       account: 0,
       coupons: 0,
@@ -77,7 +79,9 @@ Page({
     const profile = getStoredUserProfile();
     this.setData({
       userName: profile.nickName || "字书用户",
-      avatarUrl: profile.avatarUrl || ""
+      avatarUrl: profile.avatarUrl || "",
+      authNickname: profile.nickName || "",
+      authAvatarUrl: profile.avatarUrl || ""
     });
   },
 
@@ -86,7 +90,12 @@ Page({
     this.setData({ loginLoading: true });
     try {
       acceptAgreement();
-      await ensureLogin({ skipConsent: true, withProfile: true });
+      const nickName = (this.data.authNickname || "").trim() || "字书用户";
+      saveUserProfile({
+        nickName,
+        avatarUrl: this.data.authAvatarUrl || ""
+      });
+      await ensureLogin({ skipConsent: true, withProfile: false });
       this.setData({
         loginLoading: false,
         loggedIn: true,
@@ -168,6 +177,16 @@ Page({
     const profile = getStoredUserProfile();
     saveUserProfile({ ...profile, avatarUrl });
     this.setData({ avatarUrl });
+  },
+
+  chooseAuthAvatar(event) {
+    const avatarUrl = event.detail && event.detail.avatarUrl;
+    if (!avatarUrl) return;
+    this.setData({ authAvatarUrl: avatarUrl });
+  },
+
+  inputAuthNickname(event) {
+    this.setData({ authNickname: event.detail.value || "" });
   },
 
   openSettings() {

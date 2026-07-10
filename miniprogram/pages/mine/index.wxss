@@ -490,6 +490,110 @@
   box-sizing: border-box;
 }
 
+.auth-app-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 28rpx;
+}
+
+.auth-logo {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #f5f5f5;
+  color: #d2a600;
+  font-size: 42rpx;
+  font-weight: 900;
+  line-height: 72rpx;
+  text-align: center;
+}
+
+.auth-app-name {
+  color: #111111;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.auth-app-subtitle {
+  margin-top: 12rpx;
+  color: #111111;
+  font-size: 38rpx;
+  font-weight: 900;
+}
+
+.auth-profile-row {
+  height: 118rpx;
+  margin: 0 0 34rpx;
+  background: #ffffff;
+  border-top: 1rpx solid #eeeeee;
+  border-bottom: 1rpx solid #eeeeee;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  text-align: left;
+}
+
+.auth-avatar-button {
+  width: 86rpx;
+  height: 86rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 8rpx;
+  background: transparent;
+  line-height: 1;
+}
+
+.auth-avatar-button::after {
+  border: 0;
+}
+
+.auth-avatar {
+  width: 86rpx;
+  height: 86rpx;
+  border-radius: 8rpx;
+}
+
+.auth-avatar-empty {
+  background: #eeeeee;
+  position: relative;
+}
+
+.auth-avatar-empty::before {
+  content: "";
+  position: absolute;
+  left: 26rpx;
+  top: 18rpx;
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 50%;
+  background: #d0d0d0;
+}
+
+.auth-avatar-empty::after {
+  content: "";
+  position: absolute;
+  left: 18rpx;
+  bottom: 16rpx;
+  width: 42rpx;
+  height: 22rpx;
+  border-radius: 24rpx 24rpx 0 0;
+  background: #d0d0d0;
+}
+
+.auth-nickname {
+  flex: 1;
+  color: #111111;
+  font-size: 36rpx;
+}
+
+.auth-check {
+  width: 54rpx;
+  color: #09a35c;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
 .auth-title {
   color: #111111;
   font-size: 42rpx;
