@@ -3,6 +3,7 @@ const { request, ensureLogin } = require("../../utils/request");
 const app = getApp();
 
 const assetBase = `${app.globalData.apiBase}/miniprogram-assets`;
+const LESSON_CACHE_PREFIX = "zishooLessonCache:";
 
 function getCoverImage(title) {
   if (title.includes("Q2") || title.includes("第2季")) return "/assets/xet/q2-cover.jpg";
@@ -77,6 +78,30 @@ function getEpisodeDate(kind, episodeNumber) {
   return "2025.02.26";
 }
 
+function buildLessonState(data) {
+  const course = data.course || {};
+  const courseKind = getCourseKind(course.title || "");
+  const displayTitle = getDisplayTitle(course.title || "");
+  return {
+    course: {
+      ...course,
+      displayTitle,
+      coverAsset: getHeroCover(courseKind, course.title || ""),
+      priceText: Number(course.price || 0).toFixed(2),
+      coverImage: getCoverImage(course.title || ""),
+      subscriberCount: Number(course.subscriberCount || 0)
+    },
+    episodes: (data.episodes || []).map((episode) => ({
+      ...episode,
+      displayDate: getEpisodeDate(courseKind, Number(episode.episode_number || 0))
+    })),
+    detailImages: getDetailImages(courseKind),
+    courseKind,
+    unlocked: Boolean(data.unlocked),
+    loggedIn: Boolean(data.loggedIn)
+  };
+}
+
 Page({
   data: {
     courseId: "",
@@ -110,48 +135,57 @@ Page({
       referrer: options.ref || "",
       giftCode: options.gift || ""
     });
+    this.restoreLessonCache(options.id);
     if (options.gift) {
       this.claimGift(options.gift);
     }
   },
 
   onShow() {
-    if (this.data.courseId && !this.data.course) {
-      this.loadLesson();
+    if (this.data.courseId) {
+      this.loadLesson({ silent: Boolean(this.data.course) });
     }
   },
 
-  async loadLesson() {
-    this.setData({ loading: true, error: "" });
+  getLessonCacheKey(courseId = this.data.courseId) {
+    return `${LESSON_CACHE_PREFIX}${courseId || ""}`;
+  },
+
+  restoreLessonCache(courseId) {
+    const cached = wx.getStorageSync(this.getLessonCacheKey(courseId));
+    if (!cached || !cached.course) return;
+    wx.setNavigationBarTitle({ title: (cached.course.displayTitle || cached.course.title || "课程详情").slice(0, 18) });
+    this.setData({
+      ...cached,
+      loading: false,
+      error: ""
+    });
+  },
+
+  async loadLesson(options = {}) {
+    const silent = Boolean(options.silent);
+    if (!silent) {
+      this.setData({ loading: true, error: "" });
+    } else {
+      this.setData({ error: "" });
+    }
     try {
       const data = await request({
         url: `/api/miniprogram/lesson?courseId=${this.data.courseId}`
       });
-      const course = data.course || {};
-      const courseKind = getCourseKind(course.title || "");
-      const episodeCount = (data.episodes || []).length;
-      const displayTitle = getDisplayTitle(course.title || "");
-      wx.setNavigationBarTitle({ title: displayTitle.slice(0, 18) });
+      const lessonState = buildLessonState(data);
+      wx.setNavigationBarTitle({ title: lessonState.course.displayTitle.slice(0, 18) });
+      wx.setStorageSync(this.getLessonCacheKey(), lessonState);
       this.setData({
-        course: {
-          ...course,
-          displayTitle,
-          coverAsset: getHeroCover(courseKind, course.title || ""),
-          priceText: Number(course.price || 0).toFixed(2),
-          coverImage: getCoverImage(course.title || ""),
-          subscriberCount: Number(course.subscriberCount || 0)
-        },
-        episodes: (data.episodes || []).map((episode) => ({
-          ...episode,
-          displayDate: getEpisodeDate(courseKind, Number(episode.episode_number || 0))
-        })),
-        detailImages: getDetailImages(courseKind),
-        courseKind,
-        unlocked: Boolean(data.unlocked),
-        loggedIn: Boolean(data.loggedIn),
+        ...lessonState,
         loading: false
       });
     } catch (error) {
+      if (silent && this.data.course) {
+        console.warn("refresh lesson failed", error);
+        this.setData({ loading: false });
+        return;
+      }
       this.setData({
         error: error.message || "课程详情加载失败",
         loading: false
