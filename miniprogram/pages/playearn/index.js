@@ -1,4 +1,13 @@
-const { request, ensureLogin } = require("../../utils/request");
+const { request, ensureLogin, isLoggedIn } = require("../../utils/request");
+
+function requireLoggedIn() {
+  if (isLoggedIn()) return true;
+  wx.showToast({ title: "请先登录后购买", icon: "none" });
+  setTimeout(() => {
+    wx.navigateTo({ url: "/pages/mine/index?login=1" });
+  }, 350);
+  return false;
+}
 
 Page({
   data: {
@@ -40,6 +49,8 @@ Page({
   },
 
   async confirmSku() {
+    if (!requireLoggedIn()) return;
+
     if (!this.data.selectedType) {
       wx.showToast({ title: "请选择类型", icon: "none" });
       return;
@@ -89,6 +100,7 @@ Page({
   },
 
   buyProduct() {
+    if (!requireLoggedIn()) return;
     this.openSku();
   }
 });
