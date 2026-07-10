@@ -1,9 +1,18 @@
-const { request, ensureLogin } = require("../../utils/request");
+const { request, ensureLogin, isLoggedIn } = require("../../utils/request");
 
 const app = getApp();
 
 const assetBase = `${app.globalData.apiBase}/miniprogram-assets`;
 const LESSON_CACHE_PREFIX = "zishooLessonCache:";
+
+function requireLoggedIn() {
+  if (isLoggedIn()) return true;
+  wx.showToast({ title: "请先登录后购买", icon: "none" });
+  setTimeout(() => {
+    wx.navigateTo({ url: "/pages/mine/index?login=1" });
+  }, 350);
+  return false;
+}
 
 function getCoverImage(title) {
   if (title.includes("Q2") || title.includes("第2季")) return "/assets/xet/q2-cover.jpg";
@@ -194,6 +203,8 @@ Page({
   },
 
   async buyCourse() {
+    if (!requireLoggedIn()) return;
+
     this.setData({ paying: true });
     try {
       await ensureLogin();
@@ -475,6 +486,8 @@ Page({
   },
 
   async submitGiftOrder() {
+    if (!requireLoggedIn()) return;
+
     this.setData({ giftPaying: true });
     try {
       await ensureLogin();
