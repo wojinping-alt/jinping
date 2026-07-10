@@ -111,7 +111,7 @@
           </view>
           <view class="evaluated-footer">
             <view class="useful">♡ 有用</view>
-            <view class="append-review-button" data-id="{{item.id}}" catchtap="appendReviewFromOrder">追评</view>
+            <view wx:if="{{!item.appendContent && !item.appendImages.length}}" class="append-review-button" data-id="{{item.id}}" catchtap="appendReviewFromOrder">追评</view>
           </view>
         </view>
       </block>

@@ -60,7 +60,7 @@
       <view class="useful-row">♡ 有用</view>
     </view>
 
-    <view class="append-bar">
+    <view wx:if="{{!appendContent && !appendImages.length}}" class="append-bar">
       <view class="append-btn" bindtap="appendReview">追评</view>
     </view>
   </block>
