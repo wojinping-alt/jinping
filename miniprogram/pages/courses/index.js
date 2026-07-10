@@ -81,7 +81,8 @@ Page({
   },
 
   async loadCourses() {
-    this.setData({ loading: true, error: "" });
+    const hasCourses = this.data.courses.length > 0;
+    this.setData({ loading: !hasCourses, error: "" });
     try {
       const data = await request({ url: "/api/miniprogram/courses" });
       const courses = (data.courses || []).map((course, index) => {
@@ -108,6 +109,11 @@ Page({
         loading: false
       });
     } catch (error) {
+      if (hasCourses) {
+        console.warn("refresh courses failed", error);
+        this.setData({ loading: false });
+        return;
+      }
       this.setData({
         error: error.message || "课程加载失败",
         loading: false
