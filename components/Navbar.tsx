@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -39,7 +40,12 @@ function getLocalUserHint(): CurrentUser {
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [user, setUser] = useState<CurrentUser>({ loggedIn: false });
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   useEffect(() => {
     let active = true;
