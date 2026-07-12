@@ -167,38 +167,39 @@ export default async function AdminPage({
         ) : null}
 
         <section className="grid gap-4 md:grid-cols-4">
-          <div className="rounded-lg bg-white p-5 shadow-sm">
+          <Link
+            className="rounded-lg bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            href="/admin/orders?status=paid"
+          >
             <p className="text-sm text-slate-500">累计支付金额</p>
             <p className="mt-2 text-3xl font-bold">{money(revenue)}</p>
-          </div>
-          <div className="rounded-lg bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">订单总数</p>
-            <p className="mt-2 text-3xl font-bold">{allOrders.length}</p>
-          </div>
-          <div className="rounded-lg bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">待付款</p>
-            <p className="mt-2 text-3xl font-bold">{pendingOrders.length}</p>
-          </div>
-          <div className="rounded-lg bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">累计用户</p>
-            <p className="mt-2 text-3xl font-bold">{userIds.size}</p>
-          </div>
-        </section>
-
-        <div className="mt-3 flex flex-wrap gap-3">
-          <Link
-            className="inline-flex rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
-            href="/admin/users"
-          >
-            查看累计用户明细 →
+            <p className="mt-2 text-xs font-semibold text-blue-600">点击查看已支付订单</p>
           </Link>
           <Link
-            className="inline-flex rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+            className="rounded-lg bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             href="/admin/orders"
           >
-            查看全部订单 →
+            <p className="text-sm text-slate-500">订单总数</p>
+            <p className="mt-2 text-3xl font-bold">{allOrders.length}</p>
+            <p className="mt-2 text-xs font-semibold text-blue-600">点击查看全部订单</p>
           </Link>
-        </div>
+          <Link
+            className="rounded-lg bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            href="/admin/orders?status=pending"
+          >
+            <p className="text-sm text-slate-500">待付款</p>
+            <p className="mt-2 text-3xl font-bold">{pendingOrders.length}</p>
+            <p className="mt-2 text-xs font-semibold text-blue-600">点击查看待付款订单</p>
+          </Link>
+          <Link
+            className="rounded-lg bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            href="/admin/users"
+          >
+            <p className="text-sm text-slate-500">累计用户</p>
+            <p className="mt-2 text-3xl font-bold">{userIds.size}</p>
+            <p className="mt-2 text-xs font-semibold text-blue-600">点击查看用户明细</p>
+          </Link>
+        </section>
 
         <section className="mt-6 rounded-lg bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-end justify-between">
