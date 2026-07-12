@@ -53,7 +53,7 @@ export async function GET(req: Request) {
       stats: {
         account: 0,
         coupons: 0,
-        favorites: 1,
+        favorites: 0,
         owned: 0,
         learningMinutes: 0,
       },
@@ -120,7 +120,7 @@ export async function GET(req: Request) {
       stats: {
         account: 0,
         coupons: 0,
-        favorites: 1,
+        favorites: 0,
         owned: 0,
         learningMinutes: 0,
       },
@@ -190,7 +190,7 @@ export async function GET(req: Request) {
     stats: {
       account: 0,
       coupons: 0,
-      favorites: 1,
+      favorites: 0,
       owned: ownedCourses.length,
       learningMinutes: 0,
     },

@@ -15,6 +15,14 @@ const baseOrderItems = [
   { label: "退款/售后", icon: "refund", status: "refund" }
 ];
 
+const defaultStats = {
+  account: 0,
+  coupons: 0,
+  favorites: 0,
+  owned: 0,
+  learningMinutes: 0
+};
+
 Page({
   data: {
     loading: true,
@@ -25,13 +33,7 @@ Page({
     avatarUrl: "",
     authNickname: "",
     authAvatarUrl: "",
-    stats: {
-      account: 0,
-      coupons: 0,
-      favorites: 1,
-      owned: 0,
-      learningMinutes: 0
-    },
+    stats: defaultStats,
     orderItems: baseOrderItems,
     toolItems: [
       { label: "我的课程", target: "owned" },
@@ -61,13 +63,7 @@ Page({
         loggedIn: false,
         loading: false,
         showLoginPanel: true,
-        stats: {
-          ...this.data.stats,
-          account: 0,
-          coupons: 0,
-          owned: 0,
-          learningMinutes: 0
-        },
+        stats: defaultStats,
         orderItems: baseOrderItems
       });
       return;
