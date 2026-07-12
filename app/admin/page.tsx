@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthed } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
@@ -183,6 +184,15 @@ export default async function AdminPage({
             <p className="mt-2 text-3xl font-bold">{userIds.size}</p>
           </div>
         </section>
+
+        <div className="mt-3">
+          <Link
+            className="inline-flex rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+            href="/admin/users"
+          >
+            查看累计用户明细 →
+          </Link>
+        </div>
 
         <section className="mt-6 rounded-lg bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-end justify-between">
