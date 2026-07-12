@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthed } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { logoutAdminAction, updateCourseAction } from "./actions";
+import { logoutAdminAction } from "./actions";
 
 type CourseRow = {
   id: string | number;
@@ -216,9 +216,10 @@ export default async function AdminPage({
               const id = String(course.id);
               return (
                 <form
-                  action={updateCourseAction}
+                  action="/admin/courses/update"
                   className="grid gap-3 rounded-lg border border-slate-200 p-4 lg:grid-cols-[80px_1fr_1.4fr_120px_100px]"
                   key={id}
+                  method="post"
                 >
                   <input type="hidden" name="id" value={id} />
                   <div>
