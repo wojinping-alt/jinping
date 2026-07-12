@@ -185,12 +185,18 @@ export default async function AdminPage({
           </div>
         </section>
 
-        <div className="mt-3">
+        <div className="mt-3 flex flex-wrap gap-3">
           <Link
             className="inline-flex rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
             href="/admin/users"
           >
             查看累计用户明细 →
+          </Link>
+          <Link
+            className="inline-flex rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+            href="/admin/orders"
+          >
+            查看全部订单 →
           </Link>
         </div>
 
